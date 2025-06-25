@@ -10,6 +10,18 @@ El Pensum WEB/
 ├── el-pensum/ → Frontend Angular
 └── El Pensum WEB.sln → Solución principal
 
+##  Tecnologías:
+
+- Angular 18 + TailwindCSS  
+- ASP.NET Core 8 Web API  
+- Entity Framework Core  
+- SQL Server  
+- GitHub 
+
+##  Contacto:
+
+[Haz clic aquí para contactar](mailto:starlynjpujolscontact@gmail.com)
+
 
 ## ¿Cómo correrlo?
 
@@ -21,36 +33,16 @@ dotnet restore
 dotnet build
 dotnet run
 
-### Frontend (Angular)
+Frontend (Angular)
 
 cd el-pensum
 npm install
 ng serve
 
 
-Accede luego a http://localhost:4200.
-
-
-Tecnologías:
-
-Angular 18 + TailwindCSS
-
-ASP.NET Core 8 Web API
-
-Entity Framework Core
-
-SQL Server
-
-GitHub
-
-Contacto: [Haz clic aquí para contactar](mailto:starlynjpujolscontact@gmail.com)
-
-
-Desarrollado por StarlynJ
+Accede luego a http://localhost:4200
 
 
 
-
-
-
+Desarrollado por **StarlynJ**
 
