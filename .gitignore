@@ -1,0 +1,19 @@
+# ASP.NET Core (backend - elpensum.api)
+elpensum.api/bin/
+elpensum.api/obj/
+elpensum.api/*.db
+elpensum.api/*.suo
+elpensum.api/*.user
+elpensum.api/appsettings.json
+elpensum.api/appsettings.Development.json
+
+# Angular (frontend - el-pensum)
+el-pensum/node_modules/
+el-pensum/dist/
+el-pensum/.angular/
+
+# Sistema y editores
+.DS_Store
+Thumbs.db
+*.log
+.vscode/

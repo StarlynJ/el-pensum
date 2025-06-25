@@ -1,0 +1,54 @@
+<h2 class="text-2xl font-bold mb-4">
+  {{ modoEdicion ? 'Editar Universidad' : 'Crear Universidad' }}
+</h2>
+
+<form (ngSubmit)="guardar()" #formUniversidad="ngForm">
+  <div>
+    <label>Nombre:</label>
+    <input type="text" [(ngModel)]="universidad.nombre" name="nombre" required />
+  </div>
+
+  <div>
+    <label>País:</label>
+    <input type="text" [(ngModel)]="universidad.pais" name="pais" required />
+  </div>
+
+  <div>
+    <label>Ciudad:</label>
+    <input type="text" [(ngModel)]="universidad.ciudad" name="ciudad" required />
+  </div>
+
+  <div>
+    <label>Ranking Nacional:</label>
+    <input type="number" [(ngModel)]="universidad.rankingNacional" name="rankingNacional" required />
+  </div>
+
+  <div>
+    <label>Ranking Mundial:</label>
+    <input type="number" [(ngModel)]="universidad.rankingMundial" name="rankingMundial" required />
+  </div>
+
+  <div>
+    <label>Logo (URL):</label>
+    <input type="text" [(ngModel)]="universidad.logoUrl" name="logoUrl" required />
+  </div>
+
+  <div>
+    <label>Imágenes del Campus:</label>
+    <div *ngFor="let img of universidad.imagenesCampus; let i = index">
+      <input type="text" [(ngModel)]="universidad.imagenesCampus[i]" [name]="'imagen' + i" />
+      <button type="button" (click)="eliminarImagen(i)">Eliminar</button>
+    </div>
+    <button type="button" (click)="agregarImagen()">+ Agregar otra imagen</button>
+  </div>
+
+  <div class="mt-4">
+    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">
+      {{ modoEdicion ? 'Actualizar Universidad' : 'Guardar Universidad' }}
+    </button>
+    <button type="button" (click)="cancelar()" class="ml-4 bg-gray-300 px-4 py-2 rounded">
+      Cancelar
+    </button>
+  </div>
+</form>
+
