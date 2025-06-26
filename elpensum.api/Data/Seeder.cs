@@ -104,15 +104,15 @@ namespace ElPensum.API.Data
 
             // Usuario admin deshabilitado para producción
             /*
-            if (!context.Usuarios.Any(u => u.Username == "admin"))
+            if (!context.Usuarios.Any(u => u.Username == ""))
             {
                 using var sha256 = SHA256.Create();
-                var password = "Admin1234!";
+                var password = "!";
                 var passwordHash = Convert.ToBase64String(sha256.ComputeHash(Encoding.UTF8.GetBytes(password)));
 
                 var usuario = new Usuario
                 {
-                    Username = "admin",
+                    Username = "",
                     PasswordHash = passwordHash
                 };
 
