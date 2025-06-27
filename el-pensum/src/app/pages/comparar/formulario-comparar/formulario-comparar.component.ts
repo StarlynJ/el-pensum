@@ -53,7 +53,7 @@ export class FormularioCompararComponent implements OnInit {
     const slug2 = this.slugify(this.universidad2.nombre);
     const slugCarrera = this.slugify(this.carrera.nombre);
 
-    // ✅ Nueva estructura de navegación: /comparar/universidad1/universidad2/carrera
+    //estructura de navegación: /comparar/universidad1/universidad2/carrera
     this.router.navigate([`/comparar/${slug1}/${slug2}/${slugCarrera}`]);
   }
 
