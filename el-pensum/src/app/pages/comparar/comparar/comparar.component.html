@@ -1,0 +1,26 @@
+<div class="container mx-auto px-4">
+  <h2 class="text-2xl font-semibold text-center my-6">Comparando: {{ carreraNombre }}</h2>
+
+  <div *ngIf="comparacion.length === 2; else sinDatos" class="overflow-x-auto">
+    <table class="min-w-full table-auto border border-gray-200 rounded-lg shadow-sm">
+      <thead>
+        <tr class="bg-gray-100 text-center">
+          <th class="border px-4 py-2 text-left">Campo</th>
+          <th class="border px-4 py-2">{{ universidad1Nombre }}</th>
+          <th class="border px-4 py-2">{{ universidad2Nombre }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let campo of campos" class="hover:bg-gray-50">
+          <td class="border px-4 py-2 font-medium">{{ campo.label }}</td>
+          <td class="border px-4 py-2 text-center">{{ obtenerValor(comparacion[0], campo.key) }}</td>
+          <td class="border px-4 py-2 text-center">{{ obtenerValor(comparacion[1], campo.key) }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <ng-template #sinDatos>
+    <p class="text-center text-red-500 mt-4">No hay información suficiente para comparar.</p>
+  </ng-template>
+</div>

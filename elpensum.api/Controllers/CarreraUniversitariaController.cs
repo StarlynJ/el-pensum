@@ -8,7 +8,7 @@ namespace ElPensum.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize] 
+    [Authorize]
     public class CarreraUniversitariaController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
@@ -18,9 +18,25 @@ namespace ElPensum.API.Controllers
             _context = context;
         }
 
+        // ✅ NUEVO: Obtener universidades que imparten una carrera
+        // GET: api/carrerauniversitaria/universidades-por-carrera/{idCarrera}
+        [HttpGet("universidades-por-carrera/{idCarrera}")]
+        [AllowAnonymous]
+        public async Task<ActionResult<IEnumerable<Universidad>>> GetUniversidadesPorCarrera(int idCarrera)
+        {
+            var universidades = await _context.CarrerasUniversitarias
+                .Include(cu => cu.Universidad)
+                .Where(cu => cu.CarreraId == idCarrera)
+                .Select(cu => cu.Universidad)
+                .Distinct()
+                .ToListAsync();
+
+            return universidades!;
+        }
+
         // GET: api/carrerauniversitaria/comparacion
         [HttpGet("comparacion")]
-        [AllowAnonymous] 
+        [AllowAnonymous]
         public async Task<IActionResult> CompararCarreras(
             [FromQuery] int uni1, [FromQuery] int uni2, [FromQuery] string carrera)
         {
@@ -96,5 +112,6 @@ namespace ElPensum.API.Controllers
         }
     }
 }
+
 
 

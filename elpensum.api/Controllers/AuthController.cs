@@ -40,7 +40,7 @@ namespace ElPensum.API.Controllers
             if (usuario.PasswordHash != hashString)
                 return Unauthorized("Contraseña incorrecta");
 
-            // Tiempo de expiración configurable con valor por defecto
+            // Tiempo de expiración 
             int expireMinutes = int.TryParse(_config["Jwt:ExpireMinutes"], out var mins) ? mins : 60;
 
             // Generar token

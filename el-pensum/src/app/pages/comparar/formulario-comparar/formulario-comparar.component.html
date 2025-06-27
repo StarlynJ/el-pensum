@@ -1,0 +1,36 @@
+<div class="formulario-comparar">
+  <h2 class="text-xl font-semibold mb-4">Comparar universidades por carrera</h2>
+
+  <!-- Selección de Carrera -->
+  <div class="mb-4">
+    <label class="block font-medium mb-1">Carrera:</label>
+    <select [(ngModel)]="carrera" (change)="onCarreraSeleccionada()" name="carrera" class="w-full border p-2 rounded">
+      <option [ngValue]="null">-- Selecciona una carrera --</option>
+      <option *ngFor="let c of carreras" [ngValue]="c">{{ c.nombre }}</option>
+    </select>
+  </div>
+
+  <!-- Selección de Universidad 1 -->
+  <div class="mb-4">
+    <label class="block font-medium mb-1">Universidad 1:</label>
+    <select [(ngModel)]="universidad1" name="universidad1" class="w-full border p-2 rounded" [disabled]="!universidadesFiltradas.length">
+      <option [ngValue]="null">-- Selecciona universidad 1 --</option>
+      <option *ngFor="let u of universidadesFiltradas" [ngValue]="u">{{ u.nombre }}</option>
+    </select>
+  </div>
+
+  <!-- Selección de Universidad 2 -->
+  <div class="mb-4">
+    <label class="block font-medium mb-1">Universidad 2:</label>
+    <select [(ngModel)]="universidad2" name="universidad2" class="w-full border p-2 rounded" [disabled]="!universidadesFiltradas.length">
+      <option [ngValue]="null">-- Selecciona universidad 2 --</option>
+      <option *ngFor="let u of universidadesFiltradas" [ngValue]="u">{{ u.nombre }}</option>
+    </select>
+  </div>
+
+  <button (click)="comparar()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+          [disabled]="!universidad1 || !universidad2 || !carrera">
+    Comparar
+  </button>
+</div>
+

@@ -73,6 +73,35 @@ namespace ElPensum.API.Controllers
             return Ok(carreras);
         }
 
+        // GET: api/universidades/por-carrera/5
+        [HttpGet("por-carrera/{idCarrera}")]
+        [AllowAnonymous]
+        public async Task<ActionResult<IEnumerable<Universidad>>> GetUniversidadesPorCarrera(int idCarrera)
+        {
+            var universidades = await _context.CarrerasUniversitarias
+                .Include(cu => cu.Universidad)
+                .Where(cu => cu.CarreraId == idCarrera && cu.Universidad != null)
+                .Select(cu => cu.Universidad!)
+                .Distinct()
+                .ToListAsync();
+
+            return Ok(universidades);
+        }
+
+        // ✅ NUEVO: GET: api/universidades/id?nombre=...
+        [HttpGet("id")]
+        [AllowAnonymous]
+        public async Task<ActionResult<int>> ObtenerIdPorNombre([FromQuery] string nombre)
+        {
+            var universidad = await _context.Universidades
+                .FirstOrDefaultAsync(u => u.Nombre.ToLower() == nombre.ToLower());
+
+            if (universidad == null)
+                return NotFound("Universidad no encontrada.");
+
+            return Ok(universidad.Id);
+        }
+
         // POST: api/universidades
         [HttpPost]
         public async Task<ActionResult<Universidad>> PostUniversidad(Universidad universidad)

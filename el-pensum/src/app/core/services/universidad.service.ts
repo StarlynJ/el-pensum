@@ -32,6 +32,10 @@ export class UniversidadService {
     return this.http.get<CarreraUniversitaria[]>(`${this.apiUrl}/${idUniversidad}/carreras`);
   }
 
+  getUniversidadesPorCarrera(idCarrera: number): Observable<Universidad[]> {
+    return this.http.get<Universidad[]>(`${this.apiUrl}/por-carrera/${idCarrera}`);
+  }
+
   crearUniversidad(universidad: Universidad): Observable<Universidad> {
     return this.http.post<Universidad>(this.apiUrl, universidad, {
       headers: this.obtenerHeaders()
@@ -49,7 +53,15 @@ export class UniversidadService {
       headers: this.obtenerHeaders()
     });
   }
+
+  // ✅ NUEVO MÉTODO AÑADIDO
+  getUniversidadIdPorNombre(nombre: string): Observable<number> {
+    return this.http.get<number>(`${this.apiUrl}/id`, {
+      params: { nombre }
+    });
+  }
 }
+
 
 
 
