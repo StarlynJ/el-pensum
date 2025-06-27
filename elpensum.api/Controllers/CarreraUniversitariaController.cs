@@ -18,7 +18,7 @@ namespace ElPensum.API.Controllers
             _context = context;
         }
 
-        // ✅ NUEVO: Obtener universidades que imparten una carrera
+        // Obtener universidades que imparten una carrera
         // GET: api/carrerauniversitaria/universidades-por-carrera/{idCarrera}
         [HttpGet("universidades-por-carrera/{idCarrera}")]
         [AllowAnonymous]
