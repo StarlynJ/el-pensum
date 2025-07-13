@@ -13,6 +13,7 @@ import { FormsModule } from '@angular/forms';
   styleUrls: ['./crear-universidad.component.css']
 })
 export class CrearUniversidadComponent implements OnInit {
+  // ✅ INICIALIZAMOS LOS NUEVOS CAMPOS
   universidad: Universidad = {
     id: 0,
     nombre: '',
@@ -21,7 +22,11 @@ export class CrearUniversidadComponent implements OnInit {
     rankingNacional: 0,
     rankingMundial: 0,
     logoUrl: '',
-    imagenesCampus: []
+    imagenesCampus: [],
+    costoInscripcion: 0,
+    costoAdmision: 0,
+    costoCredito: 0,
+    costoCarnet: 0
   };
 
   id: number | null = null;

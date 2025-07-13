@@ -47,14 +47,18 @@ export class FormularioCompararComponent implements OnInit {
   }
 
   comparar(): void {
-    if (!this.universidad1 || !this.universidad2 || !this.carrera) return;
+    // ✅ CAMBIO: Validamos que los IDs y el nombre de la carrera existan
+    if (!this.universidad1?.id || !this.universidad2?.id || !this.carrera?.nombre) {
+      alert('Por favor, selecciona dos universidades y una carrera.');
+      return;
+    }
 
-    const slug1 = this.slugify(this.universidad1.nombre);
-    const slug2 = this.slugify(this.universidad2.nombre);
+    const id1 = this.universidad1.id;
+    const id2 = this.universidad2.id;
     const slugCarrera = this.slugify(this.carrera.nombre);
 
-    // ✅ Nueva estructura de navegación: /comparar/universidad1/universidad2/carrera
-    this.router.navigate([`/comparar/${slug1}/${slug2}/${slugCarrera}`]);
+    // ✅ CAMBIO: Navegamos usando los IDs numéricos para mayor precisión
+    this.router.navigate([`/comparar/${id1}/${id2}/${slugCarrera}`]);
   }
 
   private slugify(text: string): string {

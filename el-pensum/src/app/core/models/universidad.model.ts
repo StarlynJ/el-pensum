@@ -7,4 +7,10 @@ export interface Universidad {
   rankingMundial: number;
   logoUrl: string;
   imagenesCampus: string[];
+
+  // ✅ CAMPOS NUEVOS
+  costoInscripcion: number;
+  costoAdmision: number;
+  costoCredito: number;
+  costoCarnet: number;
 }

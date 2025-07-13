@@ -18,7 +18,6 @@ namespace ElPensum.API.Controllers
             _context = context;
         }
 
-        // ✅ NUEVO: Obtener universidades que imparten una carrera
         // GET: api/carrerauniversitaria/universidades-por-carrera/{idCarrera}
         [HttpGet("universidades-por-carrera/{idCarrera}")]
         [AllowAnonymous]
@@ -84,13 +83,11 @@ namespace ElPensum.API.Controllers
             if (cuExistente == null)
                 return NotFound("Relación no encontrada.");
 
+            // ✅ **CAMBIO**: Actualizamos solo los campos que aún existen en el modelo
             cuExistente.DuracionAnios = cu.DuracionAnios;
-            cuExistente.CostoInscripcion = cu.CostoInscripcion;
-            cuExistente.CostoAdmision = cu.CostoAdmision;
-            cuExistente.CostoCredito = cu.CostoCredito;
             cuExistente.TotalCreditos = cu.TotalCreditos;
-            cuExistente.CostoCarnet = cu.CostoCarnet;
             cuExistente.PensumPdf = cu.PensumPdf;
+            cuExistente.CostosAdicionales = cu.CostosAdicionales; // Y el nuevo campo
 
             await _context.SaveChangesAsync();
 

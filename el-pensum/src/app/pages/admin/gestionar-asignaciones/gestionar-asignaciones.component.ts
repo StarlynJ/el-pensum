@@ -18,16 +18,15 @@ import { CarreraUniversitaria } from '../../../core/models/carrera-universitaria
 export class GestionarAsignacionesComponent implements OnInit {
   universidades: Universidad[] = [];
   carreras: Carrera[] = [];
+
+  // ✅ CAMBIO: Objeto actualizado al nuevo modelo
   asignacion: CarreraUniversitaria = {
     universidadId: 0,
     carreraId: 0,
     duracionAnios: 0,
-    costoInscripcion: 0,
-    costoAdmision: 0,
-    costoCredito: 0,
     totalCreditos: 0,
-    costoCarnet: 0,
-    pensumPdf: ''
+    pensumPdf: '',
+    costosAdicionales: '' // Campo nuevo
   };
 
   constructor(
@@ -65,16 +64,14 @@ export class GestionarAsignacionesComponent implements OnInit {
   }
 
   reiniciarFormulario(): void {
+    // ✅ CAMBIO: Objeto actualizado al nuevo modelo
     this.asignacion = {
       universidadId: 0,
       carreraId: 0,
       duracionAnios: 0,
-      costoInscripcion: 0,
-      costoAdmision: 0,
-      costoCredito: 0,
       totalCreditos: 0,
-      costoCarnet: 0,
-      pensumPdf: ''
+      pensumPdf: '',
+      costosAdicionales: ''
     };
   }
 }

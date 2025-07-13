@@ -1,26 +1,52 @@
-<div class="container mx-auto px-4">
-  <h2 class="text-2xl font-semibold text-center my-6">Comparando: {{ carreraNombre }}</h2>
+<div class="container mx-auto p-4 md:p-8">
 
-  <div *ngIf="comparacion.length === 2; else sinDatos" class="overflow-x-auto">
-    <table class="min-w-full table-auto border border-gray-200 rounded-lg shadow-sm">
-      <thead>
-        <tr class="bg-gray-100 text-center">
-          <th class="border px-4 py-2 text-left">Campo</th>
-          <th class="border px-4 py-2">{{ universidad1Nombre }}</th>
-          <th class="border px-4 py-2">{{ universidad2Nombre }}</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let campo of campos" class="hover:bg-gray-50">
-          <td class="border px-4 py-2 font-medium">{{ campo.label }}</td>
-          <td class="border px-4 py-2 text-center">{{ obtenerValor(comparacion[0], campo.key) }}</td>
-          <td class="border px-4 py-2 text-center">{{ obtenerValor(comparacion[1], campo.key) }}</td>
-        </tr>
-      </tbody>
-    </table>
+  <div *ngIf="isLoading" class="text-center py-10">
+    <p class="text-lg text-gray-500">Cargando comparación...</p>
   </div>
 
-  <ng-template #sinDatos>
-    <p class="text-center text-red-500 mt-4">No hay información suficiente para comparar.</p>
-  </ng-template>
+  <div *ngIf="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-md text-center">
+    <strong>Error:</strong> {{ error }}
+  </div>
+
+  <div *ngIf="!isLoading && !error && comparacion.length === 2">
+    <h1 class="text-2xl md:text-3xl font-bold text-center mb-8">
+      Comparando: <span class="text-blue-600">{{ carreraNombre }}</span>
+    </h1>
+
+    <div class="overflow-x-auto">
+      <div class="grid grid-cols-3 gap-1 md:gap-4">
+        <div class="font-bold p-3"></div>
+        
+        <div *ngFor="let uni of [universidad1, universidad2]" class="text-center font-bold p-3 bg-gray-50 rounded-lg">
+          <img [src]="uni?.logoUrl" [alt]="uni?.nombre" class="h-16 mx-auto mb-2 object-contain">
+          <h2 class="text-md md:text-lg">{{ uni?.nombre }}</h2>
+        </div>
+      </div>
+      
+      <div *ngFor="let grupo of gruposDeCampos" class="mt-6">
+        <h3 class="col-span-3 text-lg font-semibold bg-gray-100 p-3 rounded-t-lg -mb-px">
+          {{ grupo.nombre }}
+        </h3>
+        
+        <div *ngFor="let campo of grupo.campos; let isOdd = odd" class="grid grid-cols-3 gap-1 md:gap-4 items-center border-b" [ngClass]="{ 'bg-white': isOdd, 'bg-gray-50': !isOdd }">
+          <div class="p-3 font-medium text-gray-700">{{ campo.label }}</div>
+
+          <div *ngFor="let cu of comparacion" class="p-3 text-center">
+            <ng-container [ngSwitch]="campo.tipo">
+              <a *ngSwitchCase="'enlace'" [href]="obtenerValor(cu, campo.key)" target="_blank" class="text-blue-500 hover:underline">
+                Ver Documento
+              </a>
+              <span *ngSwitchCase="'moneda'">
+                {{ obtenerValor(cu, campo.key) | currency:'USD':'symbol':'1.2-2' }}
+              </span>
+              <span *ngSwitchDefault>
+                {{ obtenerValor(cu, campo.key) }}
+              </span>
+            </ng-container>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
 </div>

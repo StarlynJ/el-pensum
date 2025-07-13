@@ -1,52 +1,74 @@
-<h2 class="text-2xl font-bold mb-4">
-  {{ modoEdicion ? 'Editar Universidad' : 'Crear Universidad' }}
+<h2 class="text-xl md:text-2xl font-bold mb-6 text-center md:text-left mt-10 md:mt-0">
+  {{ modoEdicion ? 'Editar Universidad' : 'Crear Nueva Universidad' }}
 </h2>
 
-<form (ngSubmit)="guardar()" #formUniversidad="ngForm">
-  <div>
-    <label>Nombre:</label>
-    <input type="text" [(ngModel)]="universidad.nombre" name="nombre" required />
-  </div>
+<form (ngSubmit)="guardar()" #formUniversidad="ngForm" class="space-y-4 max-w-2xl">
 
   <div>
-    <label>País:</label>
-    <input type="text" [(ngModel)]="universidad.pais" name="pais" required />
+    <label class="block font-medium">Nombre:</label>
+    <input type="text" [(ngModel)]="universidad.nombre" name="nombre" required class="w-full border rounded px-3 py-2" />
   </div>
 
-  <div>
-    <label>Ciudad:</label>
-    <input type="text" [(ngModel)]="universidad.ciudad" name="ciudad" required />
-  </div>
-
-  <div>
-    <label>Ranking Nacional:</label>
-    <input type="number" [(ngModel)]="universidad.rankingNacional" name="rankingNacional" required />
-  </div>
-
-  <div>
-    <label>Ranking Mundial:</label>
-    <input type="number" [(ngModel)]="universidad.rankingMundial" name="rankingMundial" required />
-  </div>
-
-  <div>
-    <label>Logo (URL):</label>
-    <input type="text" [(ngModel)]="universidad.logoUrl" name="logoUrl" required />
-  </div>
-
-  <div>
-    <label>Imágenes del Campus:</label>
-    <div *ngFor="let img of universidad.imagenesCampus; let i = index">
-      <input type="text" [(ngModel)]="universidad.imagenesCampus[i]" [name]="'imagen' + i" />
-      <button type="button" (click)="eliminarImagen(i)">Eliminar</button>
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div>
+      <label class="block font-medium">País:</label>
+      <input type="text" [(ngModel)]="universidad.pais" name="pais" required class="w-full border rounded px-3 py-2" />
     </div>
-    <button type="button" (click)="agregarImagen()">+ Agregar otra imagen</button>
+    <div>
+      <label class="block font-medium">Ciudad:</label>
+      <input type="text" [(ngModel)]="universidad.ciudad" name="ciudad" required class="w-full border rounded px-3 py-2" />
+    </div>
+    <div>
+      <label class="block font-medium">Ranking Nacional:</label>
+      <input type="number" [(ngModel)]="universidad.rankingNacional" name="rankingNacional" required class="w-full border rounded px-3 py-2" />
+    </div>
+    <div>
+      <label class="block font-medium">Ranking Mundial:</label>
+      <input type="number" [(ngModel)]="universidad.rankingMundial" name="rankingMundial" required class="w-full border rounded px-3 py-2" />
+    </div>
   </div>
 
-  <div class="mt-4">
-    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">
+  <fieldset class="border p-4 rounded-md">
+    <legend class="font-medium px-2">Costos Generales</legend>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div>
+        <label class="block font-medium">Costo Inscripción:</label>
+        <input type="number" [(ngModel)]="universidad.costoInscripcion" name="costoInscripcion" required class="w-full border rounded px-3 py-2" />
+      </div>
+      <div>
+        <label class="block font-medium">Costo Admisión:</label>
+        <input type="number" [(ngModel)]="universidad.costoAdmision" name="costoAdmision" required class="w-full border rounded px-3 py-2" />
+      </div>
+      <div>
+        <label class="block font-medium">Costo por Crédito:</label>
+        <input type="number" [(ngModel)]="universidad.costoCredito" name="costoCredito" required class="w-full border rounded px-3 py-2" />
+      </div>
+      <div>
+        <label class="block font-medium">Costo Carnet:</label>
+        <input type="number" [(ngModel)]="universidad.costoCarnet" name="costoCarnet" required class="w-full border rounded px-3 py-2" />
+      </div>
+    </div>
+  </fieldset>
+  
+  <div>
+    <label class="block font-medium">Logo (URL):</label>
+    <input type="text" [(ngModel)]="universidad.logoUrl" name="logoUrl" required class="w-full border rounded px-3 py-2" />
+  </div>
+
+  <div>
+    <label class="block font-medium">Imágenes del Campus (URL):</label>
+    <div *ngFor="let img of universidad.imagenesCampus; let i = index" class="flex items-center gap-2 mb-2">
+      <input type="text" [(ngModel)]="universidad.imagenesCampus[i]" [name]="'imagen' + i" class="w-full border rounded px-3 py-2" />
+      <button type="button" (click)="eliminarImagen(i)" class="bg-red-500 text-white px-3 py-1 rounded text-sm">Eliminar</button>
+    </div>
+    <button type="button" (click)="agregarImagen()" class="bg-gray-200 text-black px-3 py-1 rounded text-sm mt-1">+ Agregar imagen</button>
+  </div>
+
+  <div class="mt-6 space-x-2">
+    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded" [disabled]="!formUniversidad.valid">
       {{ modoEdicion ? 'Actualizar Universidad' : 'Guardar Universidad' }}
     </button>
-    <button type="button" (click)="cancelar()" class="ml-4 bg-gray-300 px-4 py-2 rounded">
+    <button type="button" (click)="cancelar()" class="bg-gray-300 hover:bg-gray-400 px-4 py-2 rounded">
       Cancelar
     </button>
   </div>

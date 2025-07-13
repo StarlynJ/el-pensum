@@ -23,8 +23,8 @@ export const routes: Routes = [
     component: FormularioCompararComponent
   },
   {
-    // ✅ Nueva estructura de ruta
-    path: 'comparar/:slug1/:slug2/:slugCarrera',
+    // ✅ CAMBIO: Se usan :id1 y :id2 para una mayor fiabilidad
+    path: 'comparar/:id1/:id2/:slugCarrera',
     component: CompararComponent
   },
 
@@ -48,7 +48,6 @@ export const routes: Routes = [
   { path: '', redirectTo: 'inicio', pathMatch: 'full' },
   { path: '**', redirectTo: 'inicio' }
 ];
-
 
 
 

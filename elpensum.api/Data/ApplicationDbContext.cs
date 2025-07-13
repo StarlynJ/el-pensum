@@ -1,7 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using ElPensum.API.Models;
 
-
 namespace ElPensum.API.Data
 {
     public class ApplicationDbContext : DbContext
@@ -11,25 +10,22 @@ namespace ElPensum.API.Data
         {
         }
 
-
         public DbSet<Universidad> Universidades { get; set; }
         public DbSet<Carrera> Carreras { get; set; }
         public DbSet<CarreraUniversitaria> CarrerasUniversitarias { get; set; }
         public DbSet<Asesoria> Asesorias { get; set; }
-        public DbSet<Usuario> Usuarios { get; set; } 
-
+        public DbSet<Usuario> Usuarios { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-
+            // --- Relaciones ---
             modelBuilder.Entity<CarreraUniversitaria>()
                 .HasOne(cu => cu.Universidad)
                 .WithMany(u => u.Carreras)
                 .HasForeignKey(cu => cu.UniversidadId)
                 .OnDelete(DeleteBehavior.Cascade);
-
 
             modelBuilder.Entity<CarreraUniversitaria>()
                 .HasOne(cu => cu.Carrera)
@@ -37,34 +33,29 @@ namespace ElPensum.API.Data
                 .HasForeignKey(cu => cu.CarreraId)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            // --- Configuraciones de Precisión ---
 
+            // Propiedad que se queda en CarreraUniversitaria
             modelBuilder.Entity<CarreraUniversitaria>()
                 .Property(cu => cu.DuracionAnios)
                 .HasPrecision(4, 2);
 
-
-            modelBuilder.Entity<CarreraUniversitaria>()
-                .Property(cu => cu.CostoInscripcion)
+            // ✅ **CAMBIO**: Propiedades de costo movidas a la entidad Universidad
+            modelBuilder.Entity<Universidad>()
+                .Property(u => u.CostoInscripcion)
                 .HasPrecision(18, 2);
 
-
-            modelBuilder.Entity<CarreraUniversitaria>()
-                .Property(cu => cu.CostoAdmision)
+            modelBuilder.Entity<Universidad>()
+                .Property(u => u.CostoAdmision)
                 .HasPrecision(18, 2);
 
-
-            modelBuilder.Entity<CarreraUniversitaria>()
-                .Property(cu => cu.CostoCredito)
+            modelBuilder.Entity<Universidad>()
+                .Property(u => u.CostoCredito)
                 .HasPrecision(18, 2);
 
-
-            modelBuilder.Entity<CarreraUniversitaria>()
-                .Property(cu => cu.CostoCarnet)
+            modelBuilder.Entity<Universidad>()
+                .Property(u => u.CostoCarnet)
                 .HasPrecision(18, 2);
         }
     }
 }
-
-
-
-

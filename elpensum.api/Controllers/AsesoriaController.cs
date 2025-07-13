@@ -19,9 +19,7 @@ namespace ElPensum.API.Controllers
         }
 
         // POST: api/asesoria
-        /// <summary>
-        /// Recibe una solicitud de asesoría, la guarda y envía correo de resumen.
-        /// </summary>
+        
         [HttpPost]
         public async Task<IActionResult> EnviarAsesoria([FromBody] Asesoria asesoria)
         {

@@ -1,56 +1,51 @@
-<h2 class="text-xl md:text-2xl font-bold mb-4 text-center md:text-left mt-10 md:mt-0">
-  Asignar carrera
+<h2 class="text-xl md:text-2xl font-bold mb-6 text-center md:text-left mt-10 md:mt-0">
+  Asignar Carrera a Universidad
 </h2>
 
-
-<form (ngSubmit)="guardar()" class="grid gap-4 max-w-xl">
-  <div>
-    <label class="font-medium">Universidad:</label>
-    <select [(ngModel)]="asignacion.universidadId" name="universidadId" class="w-full border rounded px-3 py-2">
-      <option value="0" disabled selected>-- Selecciona --</option>
-      <option *ngFor="let uni of universidades" [value]="uni.id">{{ uni.nombre }}</option>
-    </select>
-  </div>
-
-  <div>
-    <label class="font-medium">Carrera:</label>
-    <select [(ngModel)]="asignacion.carreraId" name="carreraId" class="w-full border rounded px-3 py-2">
-      <option value="0" disabled selected>-- Selecciona --</option>
-      <option *ngFor="let c of carreras" [value]="c.id">{{ c.nombre }}</option>
-    </select>
-  </div>
-
-  <div class="grid grid-cols-2 gap-4">
+<form (ngSubmit)="guardar()" class="space-y-4 max-w-2xl">
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
     <div>
-      <label>Duración (años):</label>
-      <input type="number" [(ngModel)]="asignacion.duracionAnios" name="duracionAnios" class="w-full border rounded px-2 py-1" />
+      <label class="block font-medium">Universidad:</label>
+      <select [(ngModel)]="asignacion.universidadId" name="universidadId" required class="w-full border rounded px-3 py-2">
+        <option value="0" disabled selected>-- Selecciona --</option>
+        <option *ngFor="let uni of universidades" [value]="uni.id">{{ uni.nombre }}</option>
+      </select>
     </div>
     <div>
-      <label>Créditos totales:</label>
-      <input type="number" [(ngModel)]="asignacion.totalCreditos" name="totalCreditos" class="w-full border rounded px-2 py-1" />
-    </div>
-    <div>
-      <label>Costo inscripción:</label>
-      <input type="number" [(ngModel)]="asignacion.costoInscripcion" name="costoInscripcion" class="w-full border rounded px-2 py-1" />
-    </div>
-    <div>
-      <label>Costo admisión:</label>
-      <input type="number" [(ngModel)]="asignacion.costoAdmision" name="costoAdmision" class="w-full border rounded px-2 py-1" />
-    </div>
-    <div>
-      <label>Costo por crédito:</label>
-      <input type="number" [(ngModel)]="asignacion.costoCredito" name="costoCredito" class="w-full border rounded px-2 py-1" />
-    </div>
-    <div>
-      <label>Costo carnet:</label>
-      <input type="number" [(ngModel)]="asignacion.costoCarnet" name="costoCarnet" class="w-full border rounded px-2 py-1" />
+      <label class="block font-medium">Carrera:</label>
+      <select [(ngModel)]="asignacion.carreraId" name="carreraId" required class="w-full border rounded px-3 py-2">
+        <option value="0" disabled selected>-- Selecciona --</option>
+        <option *ngFor="let c of carreras" [value]="c.id">{{ c.nombre }}</option>
+      </select>
     </div>
   </div>
 
-  <div>
-    <label>Pensum (URL PDF):</label>
-    <input type="text" [(ngModel)]="asignacion.pensumPdf" name="pensumPdf" class="w-full border rounded px-2 py-1" />
-  </div>
+  <fieldset class="border p-4 rounded-md">
+    <legend class="font-medium px-2">Detalles de la Asignación</legend>
+    <div class="space-y-4">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="block font-medium">Duración (años):</label>
+          <input type="number" [(ngModel)]="asignacion.duracionAnios" name="duracionAnios" class="w-full border rounded px-2 py-1" />
+        </div>
+        <div>
+          <label class="block font-medium">Créditos totales:</label>
+          <input type="number" [(ngModel)]="asignacion.totalCreditos" name="totalCreditos" class="w-full border rounded px-2 py-1" />
+        </div>
+      </div>
+      <div>
+        <label class="block font-medium">Pensum (URL del PDF):</label>
+        <input type="text" [(ngModel)]="asignacion.pensumPdf" name="pensumPdf" class="w-full border rounded px-2 py-1" />
+      </div>
 
-  <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded mt-4">Asignar Carrera</button>
+      <div>
+        <label class="block font-medium">Costos Adicionales (Opcional):</label>
+        <textarea [(ngModel)]="asignacion.costosAdicionales" name="costosAdicionales" rows="3" class="w-full border rounded px-2 py-1" placeholder="Ej: Costo de laboratorios, seguro médico, etc."></textarea>
+      </div>
+    </div>
+  </fieldset>
+
+  <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded mt-4 hover:bg-blue-700">
+    Asignar Carrera
+  </button>
 </form>

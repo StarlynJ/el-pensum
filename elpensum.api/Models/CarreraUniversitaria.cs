@@ -11,11 +11,11 @@ namespace ElPensum.API.Models
         public Carrera? Carrera { get; set; }
 
         public decimal DuracionAnios { get; set; }
-        public decimal CostoInscripcion { get; set; }
-        public decimal CostoAdmision { get; set; }
-        public decimal CostoCredito { get; set; }
         public int TotalCreditos { get; set; }
-        public decimal CostoCarnet { get; set; }
         public string? PensumPdf { get; set; }
+
+        // --- NUEVO CAMPO OPCIONAL ---
+        public string? CostosAdicionales { get; set; } // Para información extra como "Examen de admisión: $50"
+        // -----------------------------
     }
 }
