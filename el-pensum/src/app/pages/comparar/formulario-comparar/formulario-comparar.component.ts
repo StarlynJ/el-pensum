@@ -57,8 +57,13 @@ export class FormularioCompararComponent implements OnInit {
     const id2 = this.universidad2.id;
     const slugCarrera = this.slugify(this.carrera.nombre);
 
+<<<<<<< HEAD
     // ✅ CAMBIO: Navegamos usando los IDs numéricos para mayor precisión
     this.router.navigate([`/comparar/${id1}/${id2}/${slugCarrera}`]);
+=======
+    //estructura de navegación: /comparar/universidad1/universidad2/carrera
+    this.router.navigate([`/comparar/${slug1}/${slug2}/${slugCarrera}`]);
+>>>>>>> 01a59975eddbb0b7b2143d8a8f4f40a43fda710b
   }
 
   private slugify(text: string): string {
