@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http'; // ✅ Importa HttpParams
 import { Observable } from 'rxjs';
 import { CarreraUniversitaria } from '../models/carrera-universitaria.model';
 import { Universidad } from '../models/universidad.model';
@@ -25,10 +25,18 @@ export class CarreraUniversitariaService {
     return this.http.get<Universidad[]>(`${this.apiUrl}/universidades-por-carrera/${idCarrera}`);
   }
 
-  // ✅ Obtener información para comparar una carrera entre dos universidades
-  compararCarreras(uni1: number, uni2: number, carrera: string): Observable<CarreraUniversitaria[]> {
-    const url = `${this.apiUrl}/comparacion?uni1=${uni1}&uni2=${uni2}&carrera=${encodeURIComponent(carrera)}`;
-    return this.http.get<CarreraUniversitaria[]>(url);
+  // ✅ CAMBIO: El método ahora acepta un array de números y usa HttpParams
+  compararCarreras(ids: number[], carrera: string): Observable<CarreraUniversitaria[]> {
+    let params = new HttpParams();
+    params = params.append('carrera', carrera);
+    
+    // Agregamos cada ID al parámetro 'ids'
+    ids.forEach(id => {
+      params = params.append('ids', id.toString());
+    });
+
+    const url = `${this.apiUrl}/comparacion`;
+    return this.http.get<CarreraUniversitaria[]>(url, { params: params });
   }
 
   // ✅ Asignar una carrera a una universidad

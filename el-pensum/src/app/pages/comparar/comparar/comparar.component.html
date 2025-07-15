@@ -8,45 +8,45 @@
     <strong>Error:</strong> {{ error }}
   </div>
 
-  <div *ngIf="!isLoading && !error && comparacion.length === 2">
+  <div *ngIf="!isLoading && !error && comparacion.length > 0">
     <h1 class="text-2xl md:text-3xl font-bold text-center mb-8">
       Comparando: <span class="text-blue-600">{{ carreraNombre }}</span>
     </h1>
 
     <div class="overflow-x-auto">
-      <div class="grid grid-cols-3 gap-1 md:gap-4">
+      <div class="grid gap-1 md:gap-4" [style.grid-template-columns]="'1fr '.repeat(universidades.length + 1)">
+
         <div class="font-bold p-3"></div>
-        
-        <div *ngFor="let uni of [universidad1, universidad2]" class="text-center font-bold p-3 bg-gray-50 rounded-lg">
+        <div *ngFor="let uni of universidades" class="text-center font-bold p-3 bg-gray-50 rounded-lg">
           <img [src]="uni?.logoUrl" [alt]="uni?.nombre" class="h-16 mx-auto mb-2 object-contain">
           <h2 class="text-md md:text-lg">{{ uni?.nombre }}</h2>
         </div>
-      </div>
-      
-      <div *ngFor="let grupo of gruposDeCampos" class="mt-6">
-        <h3 class="col-span-3 text-lg font-semibold bg-gray-100 p-3 rounded-t-lg -mb-px">
-          {{ grupo.nombre }}
-        </h3>
-        
-        <div *ngFor="let campo of grupo.campos; let isOdd = odd" class="grid grid-cols-3 gap-1 md:gap-4 items-center border-b" [ngClass]="{ 'bg-white': isOdd, 'bg-gray-50': !isOdd }">
-          <div class="p-3 font-medium text-gray-700">{{ campo.label }}</div>
 
-          <div *ngFor="let cu of comparacion" class="p-3 text-center">
-            <ng-container [ngSwitch]="campo.tipo">
-              <a *ngSwitchCase="'enlace'" [href]="obtenerValor(cu, campo.key)" target="_blank" class="text-blue-500 hover:underline">
-                Ver Documento
-              </a>
-              <span *ngSwitchCase="'moneda'">
-                {{ obtenerValor(cu, campo.key) | currency:'USD':'symbol':'1.2-2' }}
-              </span>
-              <span *ngSwitchDefault>
-                {{ obtenerValor(cu, campo.key) }}
-              </span>
-            </ng-container>
-          </div>
-        </div>
-      </div>
+        <ng-container *ngFor="let grupo of gruposDeCampos">
+          <h3 class="text-lg font-semibold bg-gray-100 p-3 rounded-t-lg -mb-px" [style.grid-column]="'span ' + (universidades.length + 1)">
+            {{ grupo.nombre }}
+          </h3>
+          
+          <ng-container *ngFor="let campo of grupo.campos; let isOdd = odd">
+            <div class="p-3 font-medium text-gray-700 border-b" [ngClass]="{ 'bg-white': isOdd, 'bg-gray-50': !isOdd }">{{ campo.label }}</div>
+            
+            <div *ngFor="let cu of comparacion" class="p-3 text-center border-b" [ngClass]="{ 'bg-white': isOdd, 'bg-gray-50': !isOdd }">
+              <ng-container [ngSwitch]="campo.tipo">
+                <a *ngSwitchCase="'enlace'" [href]="obtenerValor(cu, campo.key)" target="_blank" class="text-blue-500 hover:underline">
+                  Ver Documento
+                </a>
+                <span *ngSwitchCase="'moneda'">
+                  {{ obtenerValor(cu, campo.key) | currency:'USD':'symbol':'1.2-2' }}
+                </span>
+                <span *ngSwitchDefault>
+                  {{ obtenerValor(cu, campo.key) }}
+                </span>
+              </ng-container>
+            </div>
+          </ng-container>
+        </ng-container>
 
+      </div>
     </div>
   </div>
 </div>

@@ -19,10 +19,13 @@ import { CarreraUniversitariaService } from '../../../core/services/carrera-univ
 export class FormularioCompararComponent implements OnInit {
   carreras: Carrera[] = [];
   universidadesFiltradas: Universidad[] = [];
-
-  universidad1: Universidad | null = null;
-  universidad2: Universidad | null = null;
-  carrera: Carrera | null = null;
+  
+  // Usamos un array para las universidades seleccionadas
+  universidadesSeleccionadas: Universidad[] = [];
+  
+  // Propiedades para los dropdowns
+  carreraSeleccionada: Carrera | null = null;
+  universidadParaAgregar: Universidad | null = null;
 
   constructor(
     private carreraService: CarreraService,
@@ -37,46 +40,58 @@ export class FormularioCompararComponent implements OnInit {
   }
 
   onCarreraSeleccionada(): void {
-    if (!this.carrera?.id) return;
+    if (!this.carreraSeleccionada?.id) return;
+    
+    // Reseteamos la lista cada vez que se cambia de carrera
+    this.universidadesSeleccionadas = [];
+    this.universidadParaAgregar = null;
 
-    this.carreraUniversitariaService.getUniversidadesPorCarrera(this.carrera.id).subscribe(universidades => {
-      this.universidadesFiltradas = universidades;
-      this.universidad1 = null;
-      this.universidad2 = null;
-    });
+    this.carreraUniversitariaService.getUniversidadesPorCarrera(this.carreraSeleccionada.id)
+      .subscribe(universidades => {
+        this.universidadesFiltradas = universidades;
+      });
   }
 
-  comparar(): void {
-    // ✅ CAMBIO: Validamos que los IDs y el nombre de la carrera existan
-    if (!this.universidad1?.id || !this.universidad2?.id || !this.carrera?.nombre) {
-      alert('Por favor, selecciona dos universidades y una carrera.');
+  // Método para añadir una universidad a la lista
+  agregarUniversidad(): void {
+    if (!this.universidadParaAgregar) {
+      alert('Por favor, selecciona una universidad para añadir.');
+      return;
+    }
+    if (this.universidadesSeleccionadas.length >= 4) {
+      alert('Puedes comparar un máximo de 4 universidades.');
+      return;
+    }
+    if (this.universidadesSeleccionadas.find(u => u.id === this.universidadParaAgregar!.id)) {
+      alert('Esa universidad ya ha sido añadida.');
       return;
     }
 
-    const id1 = this.universidad1.id;
-    const id2 = this.universidad2.id;
-    const slugCarrera = this.slugify(this.carrera.nombre);
+    this.universidadesSeleccionadas.push(this.universidadParaAgregar);
+    this.universidadParaAgregar = null; // Reseteamos el dropdown
+  }
 
-<<<<<<< HEAD
-    // ✅ CAMBIO: Navegamos usando los IDs numéricos para mayor precisión
-    this.router.navigate([`/comparar/${id1}/${id2}/${slugCarrera}`]);
-=======
-    //estructura de navegación: /comparar/universidad1/universidad2/carrera
-    this.router.navigate([`/comparar/${slug1}/${slug2}/${slugCarrera}`]);
->>>>>>> 01a59975eddbb0b7b2143d8a8f4f40a43fda710b
+  // Método para quitar una universidad de la lista
+  quitarUniversidad(idUniversidad: number): void {
+    this.universidadesSeleccionadas = this.universidadesSeleccionadas.filter(u => u.id !== idUniversidad);
+  }
+
+  comparar(): void {
+    if (this.universidadesSeleccionadas.length < 2 || !this.carreraSeleccionada?.nombre) {
+      alert('Debes seleccionar entre 2 y 4 universidades para comparar.');
+      return;
+    }
+
+    // Construimos la lista de IDs separados por coma
+    const ids = this.universidadesSeleccionadas.map(u => u.id).join(',');
+    const slugCarrera = this.slugify(this.carreraSeleccionada.nombre);
+
+    // Navegamos con la nueva ruta
+    this.router.navigate([`/comparar/${ids}/${slugCarrera}`]);
   }
 
   private slugify(text: string): string {
-    return text
-      .toLowerCase()
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/^-+|-+$/g, '');
+    return text.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
   }
 }
-
-
-
-
 

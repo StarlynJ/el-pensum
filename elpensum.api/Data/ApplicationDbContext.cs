@@ -15,6 +15,7 @@ namespace ElPensum.API.Data
         public DbSet<CarreraUniversitaria> CarrerasUniversitarias { get; set; }
         public DbSet<Asesoria> Asesorias { get; set; }
         public DbSet<Usuario> Usuarios { get; set; }
+        public DbSet<Beca> Becas { get; set; } // ✅ NUEVA LÍNEA AÑADIDA
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -40,7 +41,7 @@ namespace ElPensum.API.Data
                 .Property(cu => cu.DuracionAnios)
                 .HasPrecision(4, 2);
 
-            // ✅ **CAMBIO**: Propiedades de costo movidas a la entidad Universidad
+            // Propiedades de costo movidas a la entidad Universidad
             modelBuilder.Entity<Universidad>()
                 .Property(u => u.CostoInscripcion)
                 .HasPrecision(18, 2);

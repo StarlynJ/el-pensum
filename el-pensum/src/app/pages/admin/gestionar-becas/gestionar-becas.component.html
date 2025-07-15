@@ -1,0 +1,70 @@
+<div class="p-4 md:p-6">
+  <h2 class="text-xl md:text-2xl font-bold mb-4 text-center md:text-left mt-10 md:mt-0">
+    Gestionar Becas
+  </h2>
+
+  <form (ngSubmit)="guardar()" #becaForm="ngForm" class="mb-8 p-6 bg-gray-50 rounded-lg shadow-md space-y-4">
+    <h3 class="text-lg font-semibold">{{ modoEdicion ? 'Editando Beca' : 'Crear Nueva Beca' }}</h3>
+    
+    <div>
+      <label for="titulo" class="block font-medium">Título</label>
+      <input type="text" id="titulo" name="titulo" [(ngModel)]="becaActual.titulo" required class="w-full border rounded px-3 py-2 mt-1">
+    </div>
+
+    <div>
+      <label for="resumen" class="block font-medium">Resumen (Máx. 300 caracteres)</label>
+      <textarea id="resumen" name="resumen" [(ngModel)]="becaActual.resumen" required maxlength="300" rows="3" class="w-full border rounded px-3 py-2 mt-1"></textarea>
+    </div>
+
+    <div>
+      <label for="imagenUrl" class="block font-medium">URL de la Imagen</label>
+      <input type="text" id="imagenUrl" name="imagenUrl" [(ngModel)]="becaActual.imagenUrl" required placeholder="/assets/becas/nombre-imagen.jpg" class="w-full border rounded px-3 py-2 mt-1">
+    </div>
+
+    <div>
+      <label for="enlace" class="block font-medium">Enlace de la Beca</label>
+      <input type="url" id="enlace" name="enlace" [(ngModel)]="becaActual.enlace" required placeholder="https://ejemplo.com/beca" class="w-full border rounded px-3 py-2 mt-1">
+    </div>
+    
+    <div class="space-x-2">
+      <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded" [disabled]="!becaForm.valid">
+        {{ modoEdicion ? 'Actualizar Beca' : 'Guardar Beca' }}
+      </button>
+      <button type="button" *ngIf="modoEdicion" (click)="cancelar()" class="bg-gray-400 text-white px-4 py-2 rounded">
+        Cancelar Edición
+      </button>
+    </div>
+  </form>
+
+  <h3 class="text-lg font-semibold mb-4">Becas Existentes</h3>
+  <div *ngIf="isLoading" class="text-center">Cargando becas...</div>
+  <div *ngIf="error" class="text-red-600 text-center">{{ error }}</div>
+
+  <div *ngIf="!isLoading && becas.length === 0" class="text-gray-500 text-center">
+    No hay becas registradas.
+  </div>
+
+  <div class="overflow-x-auto" *ngIf="!isLoading && becas.length > 0">
+    <table class="min-w-full bg-white border">
+      <thead class="bg-gray-100">
+        <tr>
+          <th class="border px-4 py-2">Título</th>
+          <th class="border px-4 py-2">Resumen</th>
+          <th class="border px-4 py-2">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let beca of becas">
+          <td class="border px-4 py-2 font-medium">{{ beca.titulo }}</td>
+          <td class="border px-4 py-2 text-sm">{{ beca.resumen }}</td>
+          <td class="border px-4 py-2 text-center">
+            <div class="flex justify-center gap-2">
+              <button (click)="editar(beca)" class="bg-yellow-500 text-white px-3 py-1 text-sm rounded">Editar</button>
+              <button (click)="eliminar(beca.id!)" class="bg-red-600 text-white px-3 py-1 text-sm rounded">Eliminar</button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

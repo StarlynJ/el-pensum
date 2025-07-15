@@ -21,12 +21,12 @@ namespace ElPensum.API.Models
         [Required]
         public string LogoUrl { get; set; } = string.Empty;
 
-        // --- NUEVOS CAMPOS DE COSTOS ---
+
         public decimal CostoInscripcion { get; set; }
         public decimal CostoAdmision { get; set; }
         public decimal CostoCredito { get; set; }
         public decimal CostoCarnet { get; set; }
-        // ---------------------------------
+
 
         public List<string> ImagenesCampus { get; set; } = new();
         public List<CarreraUniversitaria> Carreras { get; set; } = new();

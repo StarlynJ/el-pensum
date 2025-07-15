@@ -1,4 +1,3 @@
-<!-- Botón hamburguesa (en móvil) -->
 <button
   class="md:hidden p-2 fixed top-2 left-2 z-50 bg-blue-600 text-white rounded"
   (click)="toggleSidebar()"
@@ -6,17 +5,14 @@
   ☰
 </button>
 
-<!-- Backdrop -->
 <div
   *ngIf="sidebarAbierto && esPantallaMovil"
   class="fixed inset-0 bg-black bg-opacity-40 z-30"
   (click)="cerrarSidebar()"
 ></div>
 
-<!-- Contenedor principal -->
 <div class="flex h-screen overflow-hidden">
 
-  <!-- Sidebar -->
   <div
     class="bg-gray-800 text-white w-64 h-full z-40 transition-transform duration-300 ease-in-out"
     [ngClass]="{
@@ -29,13 +25,11 @@
       <a routerLink="/admin/universidades" routerLinkActive="font-bold" class="block py-2 px-4 hover:bg-gray-700 rounded">Universidades</a>
       <a routerLink="/admin/carreras" routerLinkActive="font-bold" class="block py-2 px-4 hover:bg-gray-700 rounded">Carreras</a>
       <a routerLink="/admin/asignaciones" routerLinkActive="font-bold" class="block py-2 px-4 hover:bg-gray-700 rounded">Asignaciones</a>
+      <a routerLink="/admin/becas" routerLinkActive="font-bold" class="block py-2 px-4 hover:bg-gray-700 rounded">Gestionar Becas</a>
     </div>
   </div>
 
-  <!-- Contenido principal -->
-  <div class="flex-1 overflow-auto md:ml-64 p-4">
+  <div class="flex-1 overflow-auto p-4" [ngClass]="{ 'ml-0': esPantallaMovil, 'md:ml-64': !esPantallaMovil && sidebarAbierto, 'md:ml-0': !sidebarAbierto && !esPantallaMovil }">
     <router-outlet></router-outlet>
   </div>
 </div>
-
-

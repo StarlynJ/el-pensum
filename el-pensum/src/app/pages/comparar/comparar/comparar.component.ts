@@ -15,9 +15,7 @@ import { CarreraUniversitaria } from '../../../core/models/carrera-universitaria
 })
 export class CompararComponent implements OnInit {
   carreraNombre = '';
-  universidad1: Universidad | null = null;
-  universidad2: Universidad | null = null;
-  
+  universidades: Universidad[] = [];
   comparacion: CarreraUniversitaria[] = [];
   isLoading = true;
   error = '';
@@ -54,32 +52,27 @@ export class CompararComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // ✅ CAMBIO: Leemos los IDs directamente de la URL.
-    const id1 = this.route.snapshot.paramMap.get('id1');
-    const id2 = this.route.snapshot.paramMap.get('id2');
+    const idsString = this.route.snapshot.paramMap.get('ids');
     const slugCarrera = this.route.snapshot.paramMap.get('slugCarrera');
 
-    if (!id1 || !id2 || !slugCarrera) {
+    if (!idsString || !slugCarrera) {
       this.error = 'Faltan parámetros en la URL para realizar la comparación.';
       this.isLoading = false;
       return;
     }
-    
+
+    const ids = idsString.split(',').map(id => +id);
     this.carreraNombre = this.deslugify(slugCarrera);
 
-    // ✅ CAMBIO: Lógica simplificada. Llamamos directamente al servicio con los IDs.
-    // El '+' convierte los strings de la URL a números.
-    this.cuService.compararCarreras(+id1, +id2, this.carreraNombre).subscribe({
+    // Llamamos al servicio con la nueva firma (un array de IDs y la carrera)
+    this.cuService.compararCarreras(ids, this.carreraNombre).subscribe({
       next: (data) => {
-        if (data.length < 2) {
-          this.error = 'No se encontró información para una de las universidades en la carrera seleccionada.';
-          this.isLoading = false;
-          return;
+        if (data.length < ids.length) {
+          this.error = 'No se encontró información para todas las universidades en la carrera seleccionada.';
         }
-        // Asignamos los datos completos para usarlos en el HTML
-        this.universidad1 = data.find(c => c.universidad?.id === +id1)?.universidad || null;
-        this.universidad2 = data.find(c => c.universidad?.id === +id2)?.universidad || null;
-        this.comparacion = data;
+        // Asignamos los datos para usarlos en el HTML, ordenados y filtrados
+        this.comparacion = data.sort((a, b) => ids.indexOf(a.universidadId) - ids.indexOf(b.universidadId));
+        this.universidades = this.comparacion.map(c => c.universidad).filter(u => u !== undefined) as Universidad[];
         this.isLoading = false;
       },
       error: (err) => {

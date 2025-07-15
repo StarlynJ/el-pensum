@@ -3,6 +3,9 @@ using Microsoft.EntityFrameworkCore;
 using ElPensum.API.Data;
 using ElPensum.API.Models;
 using Microsoft.AspNetCore.Authorization;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace ElPensum.API.Controllers
 {
@@ -18,10 +21,6 @@ namespace ElPensum.API.Controllers
             _context = context;
         }
 
-<<<<<<< HEAD
-=======
-        // Obtener universidades que imparten una carrera
->>>>>>> 01a59975eddbb0b7b2143d8a8f4f40a43fda710b
         // GET: api/carrerauniversitaria/universidades-por-carrera/{idCarrera}
         [HttpGet("universidades-por-carrera/{idCarrera}")]
         [AllowAnonymous]
@@ -40,19 +39,28 @@ namespace ElPensum.API.Controllers
         // GET: api/carrerauniversitaria/comparacion
         [HttpGet("comparacion")]
         [AllowAnonymous]
+        // ✅ CAMBIO: Ahora acepta una lista de IDs de universidad
         public async Task<IActionResult> CompararCarreras(
-            [FromQuery] int uni1, [FromQuery] int uni2, [FromQuery] string carrera)
+            [FromQuery] int[] ids, [FromQuery] string carrera)
         {
+            if (ids == null || !ids.Any())
+            {
+                return BadRequest("Debe proporcionar al menos un ID de universidad.");
+            }
+
             var resultados = await _context.CarrerasUniversitarias
                 .Include(cu => cu.Universidad)
                 .Include(cu => cu.Carrera)
                 .Where(cu =>
-                    (cu.UniversidadId == uni1 || cu.UniversidadId == uni2) &&
+                    ids.Contains(cu.UniversidadId) && // Usamos .Contains() para buscar en la lista
                     cu.Carrera != null && cu.Carrera.Nombre == carrera)
+                .OrderBy(cu => cu.UniversidadId)
                 .ToListAsync();
 
-            if (resultados.Count < 2)
-                return NotFound("No se encontraron registros suficientes para comparar.");
+            if (resultados.Count < ids.Length)
+            {
+                return NotFound("No se encontraron registros para todas las universidades solicitadas en esa carrera.");
+            }
 
             return Ok(resultados);
         }
@@ -87,11 +95,10 @@ namespace ElPensum.API.Controllers
             if (cuExistente == null)
                 return NotFound("Relación no encontrada.");
 
-            // ✅ **CAMBIO**: Actualizamos solo los campos que aún existen en el modelo
             cuExistente.DuracionAnios = cu.DuracionAnios;
             cuExistente.TotalCreditos = cu.TotalCreditos;
             cuExistente.PensumPdf = cu.PensumPdf;
-            cuExistente.CostosAdicionales = cu.CostosAdicionales; // Y el nuevo campo
+            cuExistente.CostosAdicionales = cu.CostosAdicionales;
 
             await _context.SaveChangesAsync();
 
