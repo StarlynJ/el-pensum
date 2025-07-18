@@ -1,0 +1,11 @@
+.panel-container {
+  transform: translateX(100%);
+  transition: transform 0.3s ease-in-out;
+}
+
+.panel-container.ng-animating,
+.panel-container {
+  transform: translateX(0);
+}
+
+/* Para cuando se cierre, podríamos definir una animación de salida si quisiéramos */

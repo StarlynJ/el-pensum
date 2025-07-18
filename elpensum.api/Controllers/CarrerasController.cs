@@ -8,7 +8,7 @@ namespace ElPensum.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize] 
+    [Authorize]
     public class CarrerasController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
@@ -18,63 +18,79 @@ namespace ElPensum.API.Controllers
             _context = context;
         }
 
+        // GET: api/carreras
         [HttpGet]
-        [AllowAnonymous] 
+        [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<Carrera>>> GetCarreras()
         {
             return await _context.Carreras.ToListAsync();
         }
 
+        // --- MÉTODO AÑADIDO ---
+        // GET: api/carreras/5
         [HttpGet("{id}")]
-        [AllowAnonymous] 
+        [AllowAnonymous]
         public async Task<ActionResult<Carrera>> GetCarrera(int id)
         {
-            var carrera = await _context.Carreras
-                .Include(c => c.CarrerasUniversitarias)
-                    .ThenInclude(cu => cu.Universidad)
-                .FirstOrDefaultAsync(c => c.Id == id);
+            var carrera = await _context.Carreras.FindAsync(id);
 
             if (carrera == null)
-                return NotFound("Carrera no encontrada.");
+            {
+                return NotFound();
+            }
 
             return carrera;
         }
+        // ------------------------
 
+        // POST: api/carreras
         [HttpPost]
-        public async Task<IActionResult> CrearCarrera([FromBody] Carrera carrera)
+        public async Task<ActionResult<Carrera>> PostCarrera(Carrera carrera)
         {
-            if (carrera == null || string.IsNullOrWhiteSpace(carrera.Nombre))
-                return BadRequest("Nombre de carrera inválido.");
-
             _context.Carreras.Add(carrera);
             await _context.SaveChangesAsync();
-
-            return Ok(carrera);
+            return CreatedAtAction(nameof(GetCarrera), new { id = carrera.Id }, carrera);
         }
 
+        // PUT: api/carreras/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> ActualizarCarrera(int id, [FromBody] Carrera carrera)
+        public async Task<IActionResult> PutCarrera(int id, Carrera carrera)
         {
             if (id != carrera.Id)
-                return BadRequest("ID no coincide.");
+            {
+                return BadRequest();
+            }
 
-            var carreraExistente = await _context.Carreras.FindAsync(id);
-            if (carreraExistente == null)
-                return NotFound("Carrera no encontrada.");
+            _context.Entry(carrera).State = EntityState.Modified;
 
-            carreraExistente.Nombre = carrera.Nombre;
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!_context.Carreras.Any(e => e.Id == id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
 
-            await _context.SaveChangesAsync();
-
-            return Ok(carreraExistente);
+            return NoContent();
         }
 
+        // DELETE: api/carreras/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> EliminarCarrera(int id)
+        public async Task<IActionResult> DeleteCarrera(int id)
         {
             var carrera = await _context.Carreras.FindAsync(id);
             if (carrera == null)
-                return NotFound("Carrera no encontrada.");
+            {
+                return NotFound();
+            }
 
             _context.Carreras.Remove(carrera);
             await _context.SaveChangesAsync();
@@ -83,4 +99,3 @@ namespace ElPensum.API.Controllers
         }
     }
 }
-

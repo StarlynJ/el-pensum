@@ -1,0 +1,69 @@
+<button (click)="toggleFilterVisibility()" class="fixed bottom-5 right-5 bg-blue-600 text-white p-4 rounded-full shadow-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 z-50">
+  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h18M3 8h18M3 12h18M3 16h18" />
+  </svg>
+</button>
+
+<div *ngIf="isFilterVisible" class="fixed inset-0 bg-black bg-opacity-50 z-40" (click)="toggleFilterVisibility()"></div>
+
+<div *ngIf="isFilterVisible" class="panel-container fixed top-0 right-0 h-full bg-white shadow-xl z-50 p-6 w-full max-w-md overflow-y-auto">
+  
+  <div class="flex justify-between items-center mb-6">
+    <h2 class="text-2xl font-bold text-gray-800">Filtro Avanzado</h2>
+    <button (click)="toggleFilterVisibility()" class="text-gray-500 hover:text-gray-800">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    </button>
+  </div>
+
+  <form [formGroup]="compareForm" (ngSubmit)="onSubmit()" class="space-y-6">
+    
+    <div class="p-4 border rounded-lg">
+      <h3 class="text-lg font-semibold mb-3 text-gray-700">Opción 1</h3>
+      <div class="space-y-4">
+        <div>
+          <label for="carrera1" class="block text-sm font-medium text-gray-600 mb-1">Carrera (Opcional)</label>
+          <select id="carrera1" formControlName="carrera1Id" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+            <option [ngValue]="null">-- Sin especificar --</option>
+            <option *ngFor="let carrera of allCarreras" [value]="carrera.id">{{ carrera.nombre }}</option>
+          </select>
+        </div>
+        <div>
+          <label for="universidad1" class="block text-sm font-medium text-gray-600 mb-1">Universidad</label>
+          <select id="universidad1" formControlName="universidad1Id" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-200">
+            <option [ngValue]="null" disabled>-- Seleccione una Universidad --</option>
+            <option *ngFor="let u of (compareForm.get('carrera1Id')?.value ? universidadesParaCarrera1 : allUniversidades)" [value]="u.id">{{ u.nombre }}</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="p-4 border rounded-lg">
+      <h3 class="text-lg font-semibold mb-3 text-gray-700">Opción 2</h3>
+      <div class="space-y-4">
+        <div>
+          <label for="carrera2" class="block text-sm font-medium text-gray-600 mb-1">Carrera (Opcional)</label>
+          <select id="carrera2" formControlName="carrera2Id" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+            <option [ngValue]="null">-- Sin especificar --</option>
+            <option *ngFor="let carrera of allCarreras" [value]="carrera.id">{{ carrera.nombre }}</option>
+          </select>
+        </div>
+        <div>
+          <label for="universidad2" class="block text-sm font-medium text-gray-600 mb-1">Universidad</label>
+          <select id="universidad2" formControlName="universidad2Id" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-200">
+            <option [ngValue]="null" disabled>-- Seleccione una Universidad --</option>
+            <option *ngFor="let u of (compareForm.get('carrera2Id')?.value ? universidadesParaCarrera2 : allUniversidades)" [value]="u.id">{{ u.nombre }}</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    
+    <div class="pt-4">
+      <button type="submit" [disabled]="isCompareDisabled()" class="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed">
+        Comparar
+      </button>
+    </div>
+
+  </form>
+</div>

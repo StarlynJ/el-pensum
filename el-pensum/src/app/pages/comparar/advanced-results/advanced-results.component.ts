@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { CommonModule, CurrencyPipe } from '@angular/common';
 import { forkJoin, of, throwError, Observable } from 'rxjs';
 import { switchMap, catchError } from 'rxjs/operators';
@@ -14,47 +14,69 @@ import { Universidad } from '../../../core/models/universidad.model';
 import { CarreraUniversitaria } from '../../../core/models/carrera-universitaria.model';
 
 @Component({
-  selector: 'app-comparar',
-  templateUrl: './comparar.component.html',
-  styleUrls: ['./comparar.component.css'],
+  selector: 'app-advanced-results',
   standalone: true,
-  imports: [CommonModule, CurrencyPipe]
+  imports: [CommonModule, CurrencyPipe],
+  templateUrl: './advanced-results.component.html',
+  styleUrls: ['./advanced-results.component.css']
 })
-export class CompararComponent implements OnInit {
-  carreraNombre = 'Comparación';
+export class AdvancedResultsComponent implements OnInit {
+  titulo = 'Comparación Avanzada';
   universidades: Universidad[] = [];
   comparacion: (CarreraUniversitaria | Universidad)[] = [];
   isLoading = true;
-  error = '';
+  error: string | null = null;
   gruposDeCampos: any[] = [];
 
   constructor(
     private route: ActivatedRoute,
-    private router: Router,
     private cuService: CarreraUniversitariaService,
     private universidadService: UniversidadService,
     private carreraService: CarreraService
   ) {}
 
   ngOnInit(): void {
-    const state = this.router.getCurrentNavigation()?.extras.state as any;
-    if (state && state.mode) {
-      this.handleAdvancedComparison(state);
+    const slug = this.route.snapshot.paramMap.get('slug');
+    if (slug) {
+      this.parseSlugAndLoadData(slug);
     } else {
-      this.loadLegacyComparison();
+      this.handleError('No se proporcionó información para la comparación.');
     }
   }
 
-  private handleAdvancedComparison(state: any): void {
-    if (state.mode === 'Universidades') {
-      this.carreraNombre = 'Comparando Universidades';
+  /**
+   * Parsea el slug de la URL usando expresiones regulares para mayor seguridad.
+   */
+  private parseSlugAndLoadData(slug: string): void {
+    // Patrón para universidades: u<numero>-vs-u<numero>
+    const uniRegex = /^u(\d+)-vs-u(\d+)$/;
+    const uniMatch = slug.match(uniRegex);
+
+    if (uniMatch) {
+      const uId1 = parseInt(uniMatch[1], 10);
+      const uId2 = parseInt(uniMatch[2], 10);
+      this.titulo = 'Comparando Universidades';
       this.setupUniversityComparisonFields();
-      this.loadUniversidadesComparison(state.universidadId1, state.universidadId2);
-    } else if (state.mode === 'Carreras') {
-      this.carreraNombre = 'Comparando Carreras';
-      this.setupCareerComparisonFields();
-      this.loadCarrerasComparison(state.comparacionData);
+      this.loadUniversidadesComparison(uId1, uId2);
+      return;
     }
+
+    // Patrón para carreras: c<numero>u<numero>-vs-c<numero>u<numero>
+    const careerRegex = /^c(\d+)u(\d+)-vs-c(\d+)u(\d+)$/;
+    const careerMatch = slug.match(careerRegex);
+
+    if (careerMatch) {
+      const dataToLoad = [
+        { carreraId: parseInt(careerMatch[1], 10), universidadId: parseInt(careerMatch[2], 10) },
+        { carreraId: parseInt(careerMatch[3], 10), universidadId: parseInt(careerMatch[4], 10) }
+      ];
+      this.titulo = 'Comparando Carreras';
+      this.setupCareerComparisonFields();
+      this.loadCarrerasComparison(dataToLoad);
+      return;
+    }
+
+    this.handleError('El formato de comparación en la URL es inválido.');
   }
 
   private loadUniversidadesComparison(uId1: number, uId2: number): void {
@@ -92,63 +114,12 @@ export class CompararComponent implements OnInit {
         this.comparacion = [finalResult.detalle1[0], finalResult.detalle2[0]];
         this.universidades = this.comparacion
           .map(c => (c as CarreraUniversitaria).universidad)
-          .filter((u): u is Universidad => !!u);
+          .filter((u): u is Universidad => !!u); // Filtro de seguridad de tipos
         this.isLoading = false;
       } else if (!this.error) {
-        this.handleError(new Error("No se encontró la información completa para la comparación."));
+        this.handleError('No se encontró la información completa para la comparación de carreras.');
       }
     });
-  }
-
-  private loadLegacyComparison(): void {
-    this.setupCareerComparisonFields();
-    const idsString = this.route.snapshot.paramMap.get('ids');
-    const slugCarrera = this.route.snapshot.paramMap.get('slugCarrera');
-
-    if (!idsString || !slugCarrera) {
-      this.error = 'Faltan parámetros en la URL para realizar la comparación.';
-      this.isLoading = false;
-      return;
-    }
-    const ids = idsString.split(',').map(id => +id);
-    this.carreraNombre = this.deslugify(slugCarrera);
-
-    this.cuService.compararCarreras(ids, this.carreraNombre).subscribe({
-      next: (data) => {
-        if (data.length < ids.length) {
-          this.error = 'No se encontró información para todas las universidades en la carrera seleccionada.';
-        }
-        this.comparacion = data.sort((a, b) => ids.indexOf(a.universidadId) - ids.indexOf(b.universidadId));
-        // --- CORRECCIÓN AQUÍ ---
-        // Le decimos a TypeScript que trate a 'c' como CarreraUniversitaria
-        this.universidades = this.comparacion.map(c => (c as CarreraUniversitaria).universidad).filter((u): u is Universidad => !!u);
-        this.isLoading = false;
-      },
-      error: (err) => this.handleError(err, 'Ocurrió un error al cargar los datos de la comparación.')
-    });
-  }
-
-  obtenerValor(item: any, key: string): any {
-    if (!item) return 'N/D';
-    const keys = key.split('.');
-    let valor: any = item;
-    for (const k of keys) {
-      if (valor && typeof valor === 'object' && k in valor) {
-        valor = valor[k];
-      } else { return 'N/D'; }
-    }
-    return valor ?? 'N/D';
-  }
-
-  private deslugify(slug: string): string {
-    return slug.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-  }
-
-  private handleError(err: any, customMessage?: string): Observable<null> {
-    this.error = customMessage || err?.message || 'Ocurrió un error al cargar los datos.';
-    this.isLoading = false;
-    console.error('Error en CompararComponent:', err);
-    return of(null);
   }
 
   private setupCareerComparisonFields(): void {
@@ -158,11 +129,10 @@ export class CompararComponent implements OnInit {
         { label: 'Total de Créditos', key: 'totalCreditos', tipo: 'texto' },
         { label: 'Pensum (PDF)', key: 'pensumPdf', tipo: 'enlace' }
       ]},
-      { nombre: 'Costos Generales (Universidad)', campos: [
+      { nombre: 'Costos (Universidad)', campos: [
         { label: 'Costo Inscripción', key: 'universidad.costoInscripcion', tipo: 'moneda' },
         { label: 'Costo Admisión', key: 'universidad.costoAdmision', tipo: 'moneda' },
         { label: 'Costo por Crédito', key: 'universidad.costoCredito', tipo: 'moneda' },
-        { label: 'Costo Carnet', key: 'universidad.costoCarnet', tipo: 'moneda' }
       ]},
       { nombre: 'Detalles Adicionales', campos: [
         { label: 'Costos Adicionales', key: 'costosAdicionales', tipo: 'texto' }
@@ -183,5 +153,24 @@ export class CompararComponent implements OnInit {
         { label: 'Costo Carnet', key: 'costoCarnet', tipo: 'moneda' }
       ]}
     ];
+  }
+  
+  obtenerValor(item: any, key: string): any {
+    if (!item) return 'N/D';
+    const keys = key.split('.');
+    let valor: any = item;
+    for (const k of keys) {
+      if (valor && typeof valor === 'object' && k in valor) {
+        valor = valor[k];
+      } else { return 'N/D'; }
+    }
+    return valor ?? 'N/D';
+  }
+
+  private handleError(message: any): Observable<null> {
+    this.error = typeof message === 'string' ? message : (message?.message || 'Ocurrió un error inesperado.');
+    this.isLoading = false;
+    console.error('Error en AdvancedResultsComponent:', message);
+    return of(null);
   }
 }
