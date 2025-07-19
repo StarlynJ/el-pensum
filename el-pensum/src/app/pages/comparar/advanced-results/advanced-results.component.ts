@@ -2,7 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CommonModule, CurrencyPipe } from '@angular/common';
 import { forkJoin, of, throwError, Observable } from 'rxjs';
-import { switchMap, catchError } from 'rxjs/operators';
+// ✅ 1. Importamos el operador 'tap'
+import { switchMap, catchError, tap } from 'rxjs/operators';
 
 // Services
 import { CarreraUniversitariaService } from '../../../core/services/carrera-universitaria.service';
@@ -44,11 +45,7 @@ export class AdvancedResultsComponent implements OnInit {
     }
   }
 
-  /**
-   * Parsea el slug de la URL usando expresiones regulares para mayor seguridad.
-   */
   private parseSlugAndLoadData(slug: string): void {
-    // Patrón para universidades: u<numero>-vs-u<numero>
     const uniRegex = /^u(\d+)-vs-u(\d+)$/;
     const uniMatch = slug.match(uniRegex);
 
@@ -61,7 +58,6 @@ export class AdvancedResultsComponent implements OnInit {
       return;
     }
 
-    // Patrón para carreras: c<numero>u<numero>-vs-c<numero>u<numero>
     const careerRegex = /^c(\d+)u(\d+)-vs-c(\d+)u(\d+)$/;
     const careerMatch = slug.match(careerRegex);
 
@@ -70,7 +66,7 @@ export class AdvancedResultsComponent implements OnInit {
         { carreraId: parseInt(careerMatch[1], 10), universidadId: parseInt(careerMatch[2], 10) },
         { carreraId: parseInt(careerMatch[3], 10), universidadId: parseInt(careerMatch[4], 10) }
       ];
-      this.titulo = 'Comparando Carreras';
+      // Eliminamos el título estático de aquí, ahora se genera dinámicamente
       this.setupCareerComparisonFields();
       this.loadCarrerasComparison(dataToLoad);
       return;
@@ -99,6 +95,16 @@ export class AdvancedResultsComponent implements OnInit {
       carrera1: this.carreraService.getCarrera(comp1.carreraId).pipe(catchError(() => of(null))),
       carrera2: this.carreraService.getCarrera(comp2.carreraId).pipe(catchError(() => of(null)))
     }).pipe(
+      // ✅ 2. Usamos 'tap' para realizar una acción sin interrumpir el flujo
+      tap(carrerasInfo => {
+        if (carrerasInfo && carrerasInfo.carrera1 && carrerasInfo.carrera2) {
+          // ✅ 3. Creamos el título dinámico con los nombres de las carreras
+          this.titulo = `Comparando ${carrerasInfo.carrera1.nombre} vs ${carrerasInfo.carrera2.nombre}`;
+        } else {
+          // Si algo falla, mantenemos un título genérico
+          this.titulo = 'Comparando Carreras';
+        }
+      }),
       switchMap(carrerasInfo => {
         if (!carrerasInfo || !carrerasInfo.carrera1 || !carrerasInfo.carrera2) {
           return throwError(() => new Error('No se pudieron obtener los datos de una o ambas carreras.'));
@@ -114,7 +120,7 @@ export class AdvancedResultsComponent implements OnInit {
         this.comparacion = [finalResult.detalle1[0], finalResult.detalle2[0]];
         this.universidades = this.comparacion
           .map(c => (c as CarreraUniversitaria).universidad)
-          .filter((u): u is Universidad => !!u); // Filtro de seguridad de tipos
+          .filter((u): u is Universidad => !!u);
         this.isLoading = false;
       } else if (!this.error) {
         this.handleError('No se encontró la información completa para la comparación de carreras.');

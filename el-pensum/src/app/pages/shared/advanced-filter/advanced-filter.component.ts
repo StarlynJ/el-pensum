@@ -32,9 +32,11 @@ export class AdvancedFilterComponent implements OnInit {
   ) {
     this.compareForm = this.fb.group({
       carrera1Id: [null],
-      universidad1Id: [{ value: null, disabled: true }],
+      // ✅ CAMBIO: El campo de universidad ahora inicia habilitado
+      universidad1Id: [null],
       carrera2Id: [null],
-      universidad2Id: [{ value: null, disabled: true }]
+      // ✅ CAMBIO: El campo de universidad ahora inicia habilitado
+      universidad2Id: [null]
     });
   }
 
@@ -49,32 +51,31 @@ export class AdvancedFilterComponent implements OnInit {
   }
  
   setupFormListeners(): void {
-    const uni1Control = this.compareForm.get('universidad1Id');
-    const uni2Control = this.compareForm.get('universidad2Id');
-
     this.compareForm.get('carrera1Id')?.valueChanges.subscribe(carreraId => {
-      uni1Control?.reset(); 
+      // Siempre reseteamos la universidad si cambia la carrera
+      this.compareForm.get('universidad1Id')?.reset();
+      
+      // ✅ CAMBIO: Ya no deshabilitamos el campo de universidad.
+      // Si se elige una carrera, filtramos la lista.
+      // Si no, el HTML usará la lista completa 'allUniversidades'.
       if (carreraId) {
-        uni1Control?.enable();
-        this.universidadesParaCarrera1 = [];
+        this.universidadesParaCarrera1 = []; // Limpiar resultados anteriores
         this.universidadService.getUniversidadesPorCarrera(carreraId)
           .pipe(catchError(() => of([])))
           .subscribe(data => this.universidadesParaCarrera1 = data);
-      } else {
-        uni1Control?.disable();
       }
     });
 
     this.compareForm.get('carrera2Id')?.valueChanges.subscribe(carreraId => {
-      uni2Control?.reset();
+      // Siempre reseteamos la universidad si cambia la carrera
+      this.compareForm.get('universidad2Id')?.reset();
+
+      // ✅ CAMBIO: Lógica simplificada igual que arriba.
       if (carreraId) {
-        uni2Control?.enable();
         this.universidadesParaCarrera2 = [];
         this.universidadService.getUniversidadesPorCarrera(carreraId)
           .pipe(catchError(() => of([])))
           .subscribe(data => this.universidadesParaCarrera2 = data);
-      } else {
-        uni2Control?.disable();
       }
     });
   }
@@ -83,6 +84,7 @@ export class AdvancedFilterComponent implements OnInit {
     this.isFilterVisible = !this.isFilterVisible;
   }
 
+  // Tu lógica para deshabilitar el botón ya es correcta. ¡Sin cambios aquí!
   isCompareDisabled(): boolean {
     const value = this.compareForm.value;
     const esCompDirecta = value.universidad1Id && value.universidad2Id && !value.carrera1Id && !value.carrera2Id;
@@ -90,21 +92,25 @@ export class AdvancedFilterComponent implements OnInit {
     return !(esCompDirecta || esCompCarreras);
   }
 
+  // Tu lógica de envío ya maneja los dos casos. ¡Sin cambios aquí!
   onSubmit(): void {
     if (this.isCompareDisabled()) return;
-    const value = this.compareForm.value;
+    
+    // Usamos getRawValue() para obtener los valores incluso de campos deshabilitados (aunque ya no lo están)
+    const value = this.compareForm.getRawValue();
     let slug = '';
     const esCompDirecta = !value.carrera1Id && !value.carrera2Id;
+
     if (esCompDirecta) {
       slug = `u${value.universidad1Id}-vs-u${value.universidad2Id}`;
     } else {
       slug = `c${value.carrera1Id}u${value.universidad1Id}-vs-c${value.carrera2Id}u${value.universidad2Id}`;
     }
+    
     this.zone.run(() => {
-      // --- CAMBIO CLAVE AQUÍ ---
-      // Apuntamos a la nueva ruta '/avanzado' que no tiene conflictos.
       this.router.navigate(['/avanzado', slug]);
     });
+    
     this.toggleFilterVisibility();
   }
 }
