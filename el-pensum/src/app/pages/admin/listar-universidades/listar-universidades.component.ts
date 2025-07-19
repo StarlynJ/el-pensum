@@ -15,11 +15,17 @@ import { FormsModule } from '@angular/forms';
   styleUrls: ['./listar-universidades.component.css']
 })
 export class ListarUniversidadesComponent implements OnInit {
+  // ✅ 1. Lista 'maestra' que nunca cambia y lista filtrada para la tabla
   universidades: Universidad[] = [];
+  universidadesFiltradas: Universidad[] = [];
+  
   carrerasPorUniversidad: Record<number, CarreraUniversitaria[]> = {};
   mostrarCarreras: { [key: number]: boolean } = {};
   cargando: boolean = true;
   error: string = '';
+
+  // ✅ 2. Propiedad para almacenar el texto del buscador
+  terminoBusqueda: string = '';
 
   constructor(
     private universidadService: UniversidadService,
@@ -31,6 +37,7 @@ export class ListarUniversidadesComponent implements OnInit {
     this.universidadService.getUniversidades().subscribe({
       next: (data) => {
         this.universidades = data;
+        this.universidadesFiltradas = data; // Inicialmente, la lista filtrada es igual a la completa
         this.cargando = false;
       },
       error: (err) => {
@@ -41,13 +48,23 @@ export class ListarUniversidadesComponent implements OnInit {
     });
   }
 
+  // ✅ 3. Nuevo método que se activa cada vez que el usuario escribe
+  filtrarUniversidades(): void {
+    const busqueda = this.terminoBusqueda.toLowerCase();
+    this.universidadesFiltradas = this.universidades.filter(uni =>
+      uni.nombre.toLowerCase().includes(busqueda)
+    );
+  }
+
   eliminar(id: number): void {
     const confirmado = confirm('¿Estás seguro de que deseas eliminar esta universidad?');
     if (!confirmado) return;
 
     this.universidadService.eliminarUniversidad(id).subscribe({
       next: () => {
+        // ✅ 4. Eliminamos de ambas listas para mantener la consistencia
         this.universidades = this.universidades.filter(u => u.id !== id);
+        this.universidadesFiltradas = this.universidadesFiltradas.filter(u => u.id !== id);
         delete this.carrerasPorUniversidad[id];
       },
       error: (err) => {
@@ -107,9 +124,6 @@ export class ListarUniversidadesComponent implements OnInit {
     return this.carrerasPorUniversidad[idUniversidad] || [];
   }
 }
-
-
-
 
 
 

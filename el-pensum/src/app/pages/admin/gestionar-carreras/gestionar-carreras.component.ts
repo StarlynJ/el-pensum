@@ -12,12 +12,17 @@ import { Carrera } from '../../../core/models/carrera.model';
   styleUrls: ['./gestionar-carreras.component.css']
 })
 export class GestionarCarrerasComponent implements OnInit {
+  // ✅ 1. Lista 'maestra' y lista 'filtrada' para la tabla
   carreras: Carrera[] = [];
-  // ✅ CAMBIO AQUÍ: Inicializamos el objeto con todos sus campos
+  carrerasFiltradas: Carrera[] = [];
+  
   carreraActual: Carrera = { nombre: '', iconoUrl: '' };
   modoEdicion: boolean = false;
   cargando: boolean = true;
   error: string = '';
+
+  // ✅ 2. Propiedad para el texto del buscador
+  terminoBusqueda: string = '';
 
   constructor(private carreraService: CarreraService) {}
 
@@ -30,6 +35,7 @@ export class GestionarCarrerasComponent implements OnInit {
     this.carreraService.getCarreras().subscribe({
       next: (data) => {
         this.carreras = data;
+        this.carrerasFiltradas = data; // Inicializamos la lista filtrada
         this.cargando = false;
       },
       error: (err) => {
@@ -38,6 +44,14 @@ export class GestionarCarrerasComponent implements OnInit {
         console.error(err);
       }
     });
+  }
+
+  // ✅ 3. Nuevo método para filtrar las carreras
+  filtrarCarreras(): void {
+    const busqueda = this.terminoBusqueda.toLowerCase();
+    this.carrerasFiltradas = this.carreras.filter(carrera =>
+      carrera.nombre.toLowerCase().includes(busqueda)
+    );
   }
 
   guardar(): void {
@@ -84,7 +98,9 @@ export class GestionarCarrerasComponent implements OnInit {
 
     this.carreraService.eliminarCarrera(id).subscribe({
       next: () => {
+        // ✅ 4. Eliminamos de ambas listas para mantener la consistencia
         this.carreras = this.carreras.filter(c => c.id !== id);
+        this.carrerasFiltradas = this.carrerasFiltradas.filter(c => c.id !== id);
       },
       error: (err) => {
         alert('Error al eliminar la carrera.');
@@ -98,7 +114,6 @@ export class GestionarCarrerasComponent implements OnInit {
   }
 
   private resetFormulario(): void {
-    // ✅ CAMBIO AQUÍ: Reseteamos el objeto con todos sus campos
     this.carreraActual = { nombre: '', iconoUrl: '' };
     this.modoEdicion = false;
   }
