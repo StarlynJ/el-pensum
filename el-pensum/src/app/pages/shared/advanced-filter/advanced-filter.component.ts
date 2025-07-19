@@ -1,5 +1,5 @@
 import { Component, OnInit, NgZone } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { catchError, of } from 'rxjs';
@@ -7,6 +7,8 @@ import { Carrera } from '../../../core/models/carrera.model';
 import { Universidad } from '../../../core/models/universidad.model';
 import { CarreraService } from '../../../core/services/carrera.service';
 import { UniversidadService } from '../../../core/services/universidad.service';
+// ✅ 1. Importamos el servicio que nos faltaba
+import { CarreraUniversitariaService } from '../../../core/services/carrera-universitaria.service';
 
 @Component({
   selector: 'app-advanced-filter',
@@ -18,86 +20,135 @@ import { UniversidadService } from '../../../core/services/universidad.service';
 export class AdvancedFilterComponent implements OnInit {
   isFilterVisible = false;
   compareForm: FormGroup;
+
   allCarreras: Carrera[] = [];
   allUniversidades: Universidad[] = [];
+
+  // ✅ 2. Listas para guardar las universidades filtradas por carrera
   universidadesParaCarrera1: Universidad[] = [];
   universidadesParaCarrera2: Universidad[] = [];
+
+  sugerencias = {
+    carrera1: { lista: [] as Carrera[], mostrar: false },
+    universidad1: { lista: [] as Universidad[], mostrar: false },
+    carrera2: { lista: [] as Carrera[], mostrar: false },
+    universidad2: { lista: [] as Universidad[], mostrar: false },
+  };
 
   constructor(
     private fb: FormBuilder,
     private carreraService: CarreraService,
     private universidadService: UniversidadService,
+    // ✅ 3. Inyectamos el servicio
+    private carreraUniversitariaService: CarreraUniversitariaService,
     private router: Router,
     private zone: NgZone
   ) {
     this.compareForm = this.fb.group({
       carrera1Id: [null],
-      // ✅ CAMBIO: El campo de universidad ahora inicia habilitado
-      universidad1Id: [null],
+      carrera1Nombre: [''],
+      universidad1Id: [null, Validators.required],
+      universidad1Nombre: ['', Validators.required],
+      
       carrera2Id: [null],
-      // ✅ CAMBIO: El campo de universidad ahora inicia habilitado
-      universidad2Id: [null]
+      carrera2Nombre: [''],
+      universidad2Id: [null, Validators.required],
+      universidad2Nombre: ['', Validators.required],
     });
   }
 
   ngOnInit(): void {
     this.loadInitialData();
-    this.setupFormListeners();
   }
 
   loadInitialData(): void {
     this.carreraService.getCarreras().subscribe(data => this.allCarreras = data);
     this.universidadService.getUniversidades().subscribe(data => this.allUniversidades = data);
   }
- 
-  setupFormListeners(): void {
-    this.compareForm.get('carrera1Id')?.valueChanges.subscribe(carreraId => {
-      // Siempre reseteamos la universidad si cambia la carrera
-      this.compareForm.get('universidad1Id')?.reset();
+
+  onInput(tipo: 'carrera' | 'universidad', opcion: 1 | 2): void {
+    const key = `${tipo}${opcion}` as keyof typeof this.sugerencias;
+    const nombreControl = this.compareForm.get(`${tipo}${opcion}Nombre`);
+    const idControl = this.compareForm.get(`${tipo}${opcion}Id`);
+    const busqueda = nombreControl?.value?.toLowerCase() || '';
+
+    if (tipo === 'carrera') {
+      this.sugerencias[key].lista = this.allCarreras.filter(c => 
+        c.nombre?.toLowerCase().includes(busqueda)
+      );
+      // ✅ 4. Si se borra el texto de la carrera, reseteamos la lista de universidades filtradas
+      if (!busqueda) {
+        if (opcion === 1) this.universidadesParaCarrera1 = [];
+        else this.universidadesParaCarrera2 = [];
+      }
+    } else { // tipo es 'universidad'
+      // ✅ 5. Determinamos de qué lista filtrar: la específica de la carrera o la general
+      const carreraId = this.compareForm.get(`carrera${opcion}Id`)?.value;
+      const listaFuente = carreraId 
+        ? (opcion === 1 ? this.universidadesParaCarrera1 : this.universidadesParaCarrera2)
+        : this.allUniversidades;
       
-      // ✅ CAMBIO: Ya no deshabilitamos el campo de universidad.
-      // Si se elige una carrera, filtramos la lista.
-      // Si no, el HTML usará la lista completa 'allUniversidades'.
-      if (carreraId) {
-        this.universidadesParaCarrera1 = []; // Limpiar resultados anteriores
-        this.universidadService.getUniversidadesPorCarrera(carreraId)
-          .pipe(catchError(() => of([])))
-          .subscribe(data => this.universidadesParaCarrera1 = data);
-      }
-    });
+      this.sugerencias[key].lista = listaFuente.filter(u => 
+        u.nombre?.toLowerCase().includes(busqueda)
+      );
+    }
 
-    this.compareForm.get('carrera2Id')?.valueChanges.subscribe(carreraId => {
-      // Siempre reseteamos la universidad si cambia la carrera
-      this.compareForm.get('universidad2Id')?.reset();
+    this.sugerencias[key].mostrar = true;
+    
+    if (idControl?.value) {
+      idControl.setValue(null, { emitEvent: false });
+    }
+  }
+  
+  seleccionarItem(tipo: 'carrera' | 'universidad', opcion: 1 | 2, item: Carrera | Universidad): void {
+    const key = `${tipo}${opcion}` as keyof typeof this.sugerencias;
+    const nombreControl = this.compareForm.get(`${tipo}${opcion}Nombre`);
+    const idControl = this.compareForm.get(`${tipo}${opcion}Id`);
 
-      // ✅ CAMBIO: Lógica simplificada igual que arriba.
-      if (carreraId) {
-        this.universidadesParaCarrera2 = [];
-        this.universidadService.getUniversidadesPorCarrera(carreraId)
-          .pipe(catchError(() => of([])))
-          .subscribe(data => this.universidadesParaCarrera2 = data);
-      }
-    });
+    nombreControl?.setValue(item.nombre);
+    idControl?.setValue(item.id);
+    
+    this.sugerencias[key].mostrar = false;
+
+    // ✅ 6. Lógica clave: Si se selecciona una carrera, cargamos sus universidades
+    if (tipo === 'carrera' && item.id) {
+      // Reseteamos la selección de universidad actual
+      this.compareForm.get(`universidad${opcion}Nombre`)?.setValue('');
+      this.compareForm.get(`universidad${opcion}Id`)?.setValue(null);
+
+      this.carreraUniversitariaService.getUniversidadesPorCarrera(item.id)
+        .pipe(catchError(() => of([])))
+        .subscribe(data => {
+          if (opcion === 1) {
+            this.universidadesParaCarrera1 = data;
+          } else {
+            this.universidadesParaCarrera2 = data;
+          }
+        });
+    }
+  }
+
+  onBlur(tipo: 'carrera' | 'universidad', opcion: 1 | 2): void {
+    const key = `${tipo}${opcion}` as keyof typeof this.sugerencias;
+    setTimeout(() => this.sugerencias[key].mostrar = false, 200);
   }
 
   toggleFilterVisibility(): void {
     this.isFilterVisible = !this.isFilterVisible;
   }
 
-  // Tu lógica para deshabilitar el botón ya es correcta. ¡Sin cambios aquí!
   isCompareDisabled(): boolean {
-    const value = this.compareForm.value;
-    const esCompDirecta = value.universidad1Id && value.universidad2Id && !value.carrera1Id && !value.carrera2Id;
-    const esCompCarreras = value.carrera1Id && value.universidad1Id && value.carrera2Id && value.universidad2Id;
-    return !(esCompDirecta || esCompCarreras);
+    const { universidad1Id, universidad2Id, carrera1Id, carrera2Id } = this.compareForm.value;
+    const compUniversidades = universidad1Id && universidad2Id && !carrera1Id && !carrera2Id;
+    const compCarreras = carrera1Id && universidad1Id && carrera2Id && universidad2Id;
+    
+    return !(compUniversidades || compCarreras);
   }
 
-  // Tu lógica de envío ya maneja los dos casos. ¡Sin cambios aquí!
   onSubmit(): void {
     if (this.isCompareDisabled()) return;
     
-    // Usamos getRawValue() para obtener los valores incluso de campos deshabilitados (aunque ya no lo están)
-    const value = this.compareForm.getRawValue();
+    const value = this.compareForm.value;
     let slug = '';
     const esCompDirecta = !value.carrera1Id && !value.carrera2Id;
 

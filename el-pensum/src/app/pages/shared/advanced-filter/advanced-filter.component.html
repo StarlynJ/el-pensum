@@ -19,42 +19,54 @@
 
   <form [formGroup]="compareForm" (ngSubmit)="onSubmit()" class="space-y-6">
     
-    <div class="p-4 border rounded-lg">
+    <div class="p-4 border rounded-lg space-y-4">
       <h3 class="text-lg font-semibold mb-3 text-gray-700">Opción 1</h3>
-      <div class="space-y-4">
-        <div>
-          <label for="carrera1" class="block text-sm font-medium text-gray-600 mb-1">Carrera (Opcional)</label>
-          <select id="carrera1" formControlName="carrera1Id" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
-            <option [ngValue]="null">-- Sin especificar --</option>
-            <option *ngFor="let carrera of allCarreras" [value]="carrera.id">{{ carrera.nombre }}</option>
-          </select>
+      <div class="campo-container relative">
+        <label for="carrera1Nombre" class="block text-sm font-medium text-gray-600 mb-1">Carrera (Opcional)</label>
+        <input id="carrera1Nombre" type="text" formControlName="carrera1Nombre" (input)="onInput('carrera', 1)" (blur)="onBlur('carrera', 1)" placeholder="Escribe para buscar una carrera" autocomplete="off" class="w-full p-2 border border-gray-300 rounded-md">
+        <div *ngIf="sugerencias.carrera1.mostrar && sugerencias.carrera1.lista.length > 0" class="sugerencias">
+          <div *ngFor="let item of sugerencias.carrera1.lista" (mousedown)="seleccionarItem('carrera', 1, item)" class="sugerencia-item">
+            <img *ngIf="item.iconoUrl" [src]="item.iconoUrl" class="sugerencia-icono">
+            <div *ngIf="!item.iconoUrl" class="sugerencia-icono-placeholder"></div>
+            <span>{{ item.nombre }}</span>
+          </div>
         </div>
-        <div>
-          <label for="universidad1" class="block text-sm font-medium text-gray-600 mb-1">Universidad</label>
-          <select id="universidad1" formControlName="universidad1Id" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-200">
-            <option [ngValue]="null" disabled>-- Seleccione una Universidad --</option>
-            <option *ngFor="let u of (compareForm.get('carrera1Id')?.value ? universidadesParaCarrera1 : allUniversidades)" [value]="u.id">{{ u.nombre }}</option>
-          </select>
+      </div>
+      <div class="campo-container relative">
+        <label for="universidad1Nombre" class="block text-sm font-medium text-gray-600 mb-1">Universidad</label>
+        <input id="universidad1Nombre" type="text" formControlName="universidad1Nombre" (input)="onInput('universidad', 1)" (blur)="onBlur('universidad', 1)" placeholder="Escribe para buscar una universidad" autocomplete="off" class="w-full p-2 border border-gray-300 rounded-md">
+        <div *ngIf="sugerencias.universidad1.mostrar && sugerencias.universidad1.lista.length > 0" class="sugerencias">
+          <div *ngFor="let item of sugerencias.universidad1.lista" (mousedown)="seleccionarItem('universidad', 1, item)" class="sugerencia-item">
+            <img *ngIf="item.logoUrl" [src]="item.logoUrl" class="sugerencia-logo">
+            <div *ngIf="!item.logoUrl" class="sugerencia-logo-placeholder"></div>
+            <span>{{ item.nombre }}</span>
+          </div>
         </div>
       </div>
     </div>
 
-    <div class="p-4 border rounded-lg">
+    <div class="p-4 border rounded-lg space-y-4">
       <h3 class="text-lg font-semibold mb-3 text-gray-700">Opción 2</h3>
-      <div class="space-y-4">
-        <div>
-          <label for="carrera2" class="block text-sm font-medium text-gray-600 mb-1">Carrera (Opcional)</label>
-          <select id="carrera2" formControlName="carrera2Id" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
-            <option [ngValue]="null">-- Sin especificar --</option>
-            <option *ngFor="let carrera of allCarreras" [value]="carrera.id">{{ carrera.nombre }}</option>
-          </select>
+       <div class="campo-container relative">
+        <label for="carrera2Nombre" class="block text-sm font-medium text-gray-600 mb-1">Carrera (Opcional)</label>
+        <input id="carrera2Nombre" type="text" formControlName="carrera2Nombre" (input)="onInput('carrera', 2)" (blur)="onBlur('carrera', 2)" placeholder="Escribe para buscar una carrera" autocomplete="off" class="w-full p-2 border border-gray-300 rounded-md">
+        <div *ngIf="sugerencias.carrera2.mostrar && sugerencias.carrera2.lista.length > 0" class="sugerencias">
+          <div *ngFor="let item of sugerencias.carrera2.lista" (mousedown)="seleccionarItem('carrera', 2, item)" class="sugerencia-item">
+            <img *ngIf="item.iconoUrl" [src]="item.iconoUrl" class="sugerencia-icono">
+            <div *ngIf="!item.iconoUrl" class="sugerencia-icono-placeholder"></div>
+            <span>{{ item.nombre }}</span>
+          </div>
         </div>
-        <div>
-          <label for="universidad2" class="block text-sm font-medium text-gray-600 mb-1">Universidad</label>
-          <select id="universidad2" formControlName="universidad2Id" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-200">
-            <option [ngValue]="null" disabled>-- Seleccione una Universidad --</option>
-            <option *ngFor="let u of (compareForm.get('carrera2Id')?.value ? universidadesParaCarrera2 : allUniversidades)" [value]="u.id">{{ u.nombre }}</option>
-          </select>
+      </div>
+      <div class="campo-container relative">
+        <label for="universidad2Nombre" class="block text-sm font-medium text-gray-600 mb-1">Universidad</label>
+        <input id="universidad2Nombre" type="text" formControlName="universidad2Nombre" (input)="onInput('universidad', 2)" (blur)="onBlur('universidad', 2)" placeholder="Escribe para buscar una universidad" autocomplete="off" class="w-full p-2 border border-gray-300 rounded-md">
+        <div *ngIf="sugerencias.universidad2.mostrar && sugerencias.universidad2.lista.length > 0" class="sugerencias">
+          <div *ngFor="let item of sugerencias.universidad2.lista" (mousedown)="seleccionarItem('universidad', 2, item)" class="sugerencia-item">
+            <img *ngIf="item.logoUrl" [src]="item.logoUrl" class="sugerencia-logo">
+            <div *ngIf="!item.logoUrl" class="sugerencia-logo-placeholder"></div>
+            <span>{{ item.nombre }}</span>
+          </div>
         </div>
       </div>
     </div>

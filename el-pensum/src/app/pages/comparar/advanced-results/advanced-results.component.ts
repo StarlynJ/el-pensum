@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CommonModule, CurrencyPipe } from '@angular/common';
 import { forkJoin, of, throwError, Observable } from 'rxjs';
-// ✅ 1. Importamos el operador 'tap'
 import { switchMap, catchError, tap } from 'rxjs/operators';
 
 // Services
@@ -66,7 +65,6 @@ export class AdvancedResultsComponent implements OnInit {
         { carreraId: parseInt(careerMatch[1], 10), universidadId: parseInt(careerMatch[2], 10) },
         { carreraId: parseInt(careerMatch[3], 10), universidadId: parseInt(careerMatch[4], 10) }
       ];
-      // Eliminamos el título estático de aquí, ahora se genera dinámicamente
       this.setupCareerComparisonFields();
       this.loadCarrerasComparison(dataToLoad);
       return;
@@ -95,13 +93,10 @@ export class AdvancedResultsComponent implements OnInit {
       carrera1: this.carreraService.getCarrera(comp1.carreraId).pipe(catchError(() => of(null))),
       carrera2: this.carreraService.getCarrera(comp2.carreraId).pipe(catchError(() => of(null)))
     }).pipe(
-      // ✅ 2. Usamos 'tap' para realizar una acción sin interrumpir el flujo
       tap(carrerasInfo => {
         if (carrerasInfo && carrerasInfo.carrera1 && carrerasInfo.carrera2) {
-          // ✅ 3. Creamos el título dinámico con los nombres de las carreras
           this.titulo = `Comparando ${carrerasInfo.carrera1.nombre} vs ${carrerasInfo.carrera2.nombre}`;
         } else {
-          // Si algo falla, mantenemos un título genérico
           this.titulo = 'Comparando Carreras';
         }
       }),
@@ -110,12 +105,21 @@ export class AdvancedResultsComponent implements OnInit {
           return throwError(() => new Error('No se pudieron obtener los datos de una o ambas carreras.'));
         }
         return forkJoin({
-          detalle1: this.cuService.compararCarreras([comp1.universidadId], carrerasInfo.carrera1.nombre),
+          // ======================= CAMBIO CLAVE AQUÍ =======================
+          // Añadimos un catchError a CADA llamada individual.
+          // Si una falla (devuelve 404), la tratamos como un resultado vacío '[]'
+          // en lugar de dejar que todo el forkJoin falle.
+          detalle1: this.cuService.compararCarreras([comp1.universidadId], carrerasInfo.carrera1.nombre)
+            .pipe(catchError(() => of([]))),
           detalle2: this.cuService.compararCarreras([comp2.universidadId], carrerasInfo.carrera2.nombre)
+            .pipe(catchError(() => of([])))
+          // =================================================================
         });
       }),
       catchError(err => this.handleError(err))
     ).subscribe(finalResult => {
+      // Esta lógica ahora funciona perfectamente. Si 'detalle1' o 'detalle2' vienen vacíos,
+      // la condición no se cumplirá y se mostrará el error de "información no encontrada".
       if (finalResult && finalResult.detalle1.length > 0 && finalResult.detalle2.length > 0) {
         this.comparacion = [finalResult.detalle1[0], finalResult.detalle2[0]];
         this.universidades = this.comparacion
@@ -123,10 +127,12 @@ export class AdvancedResultsComponent implements OnInit {
           .filter((u): u is Universidad => !!u);
         this.isLoading = false;
       } else if (!this.error) {
-        this.handleError('No se encontró la información completa para la comparación de carreras.');
+        this.handleError('No se encontró la información completa para una o ambas selecciones. Verifica que la carrera exista en la universidad indicada.');
       }
     });
   }
+
+  // ... (el resto del archivo no cambia) ...
 
   private setupCareerComparisonFields(): void {
     this.gruposDeCampos = [
