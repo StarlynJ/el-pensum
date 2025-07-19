@@ -13,7 +13,8 @@ import { Carrera } from '../../../core/models/carrera.model';
 })
 export class GestionarCarrerasComponent implements OnInit {
   carreras: Carrera[] = [];
-  carreraActual: Carrera = { nombre: '' };
+  // ✅ CAMBIO AQUÍ: Inicializamos el objeto con todos sus campos
+  carreraActual: Carrera = { nombre: '', iconoUrl: '' };
   modoEdicion: boolean = false;
   cargando: boolean = true;
   error: string = '';
@@ -97,7 +98,8 @@ export class GestionarCarrerasComponent implements OnInit {
   }
 
   private resetFormulario(): void {
-    this.carreraActual = { nombre: '' };
+    // ✅ CAMBIO AQUÍ: Reseteamos el objeto con todos sus campos
+    this.carreraActual = { nombre: '', iconoUrl: '' };
     this.modoEdicion = false;
   }
 }

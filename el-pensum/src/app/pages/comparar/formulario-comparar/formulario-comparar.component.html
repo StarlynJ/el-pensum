@@ -19,9 +19,11 @@
         (mousedown)="seleccionarCarrera(c)"
         class="sugerencia-item"
       >
-        {{ c.nombre }}
+        <img *ngIf="c.iconoUrl" [src]="c.iconoUrl" alt="Icono" class="sugerencia-icono">
+        <div *ngIf="!c.iconoUrl" class="sugerencia-icono-placeholder"></div>
+        <span>{{ c.nombre }}</span>
       </div>
-    </div>
+      </div>
   </div>
 
   <div class="mb-4" *ngIf="carreraSeleccionada">
@@ -45,9 +47,11 @@
             (mousedown)="seleccionarUniversidad(u)"
             class="sugerencia-item"
           >
-            {{ u.nombre }}
+            <img *ngIf="u.logoUrl" [src]="u.logoUrl" alt="Logo" class="sugerencia-logo">
+            <div *ngIf="!u.logoUrl" class="sugerencia-logo-placeholder"></div>
+            <span>{{ u.nombre }}</span>
           </div>
-        </div>
+          </div>
       </div>
       <button (click)="agregarUniversidad()" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600" [disabled]="!universidadParaAgregar || universidadesSeleccionadas.length >= 4">
         Añadir
