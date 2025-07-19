@@ -25,18 +25,26 @@ export class CarreraUniversitariaService {
   }
 
   /**
+   * =================================================================
    * MÉTODO CORREGIDO
-   * Los nombres de los parámetros ('ids' y 'carrera') ahora coinciden
-   * con lo que el backend (Swagger) espera.
+   * =================================================================
    */
   compararCarreras(universidadIds: number[], carreraNombre: string): Observable<CarreraUniversitaria[]> {
-    const idsString = universidadIds.join(',');
+    // 1. Empezamos con un objeto de parámetros vacío.
+    let params = new HttpParams();
 
-    let params = new HttpParams()
-      .set('ids', idsString) // <-- CORREGIDO de 'universidadIds' a 'ids'
-      .set('carrera', carreraNombre); // <-- CORREGIDO de 'carreraNombre' a 'carrera'
+    // 2. Iteramos sobre el array de IDs y añadimos cada uno.
+    //    HttpClient es lo suficientemente inteligente para crear ?ids=4&ids=6...
+    universidadIds.forEach(id => {
+      params = params.append('ids', id.toString());
+    });
+
+    // 3. Añadimos el parámetro de la carrera.
+    params = params.set('carrera', carreraNombre);
 
     const url = `${this.apiUrl}/comparacion`;
+    
+    // 4. Hacemos la llamada con los parámetros construidos correctamente.
     return this.http.get<CarreraUniversitaria[]>(url, { params });
   }
 

@@ -1,21 +1,54 @@
 <div class="formulario-comparar p-4 md:p-6 bg-gray-50 rounded-lg shadow">
   <h2 class="text-xl font-semibold mb-4 text-center">Comparar universidades por carrera</h2>
 
-  <div class="mb-4">
+  <div class="campo-container mb-4 relative">
     <label class="block font-medium mb-1">Paso 1: Elige una carrera</label>
-    <select [(ngModel)]="carreraSeleccionada" (change)="onCarreraSeleccionada()" name="carrera" class="w-full border p-2 rounded-md">
-      <option [ngValue]="null">-- Selecciona una carrera --</option>
-      <option *ngFor="let c of carreras" [ngValue]="c">{{ c.nombre }}</option>
-    </select>
+    <input
+      type="text"
+      [(ngModel)]="carreraSearchText"
+      (ngModelChange)="onCarreraInput()"
+      (blur)="showSugerenciasCarrera = false"
+      (focus)="onCarreraInput()"
+      placeholder="-- Escribe para buscar una carrera --"
+      autocomplete="off"
+      class="w-full border p-2 rounded-md"
+    />
+    <div *ngIf="showSugerenciasCarrera && carrerasSugeridas.length > 0" class="sugerencias">
+      <div
+        *ngFor="let c of carrerasSugeridas"
+        (mousedown)="seleccionarCarrera(c)"
+        class="sugerencia-item"
+      >
+        {{ c.nombre }}
+      </div>
+    </div>
   </div>
 
   <div class="mb-4" *ngIf="carreraSeleccionada">
     <label class="block font-medium mb-1">Paso 2: Añade de 2 a 4 universidades</label>
     <div class="flex gap-2">
-      <select [(ngModel)]="universidadParaAgregar" name="universidadParaAgregar" class="flex-grow border p-2 rounded-md">
-        <option [ngValue]="null">-- Selecciona una universidad --</option>
-        <option *ngFor="let u of universidadesFiltradas" [ngValue]="u">{{ u.nombre }}</option>
-      </select>
+      <div class="flex-grow campo-container relative">
+        <input
+          type="text"
+          [(ngModel)]="universidadSearchText"
+          (ngModelChange)="onUniversidadInput()"
+          (blur)="showSugerenciasUniversidad = false"
+          (focus)="onUniversidadInput()"
+          placeholder="-- Escribe para buscar una universidad --"
+          autocomplete="off"
+          class="w-full border p-2 rounded-md"
+          [disabled]="!carreraSeleccionada"
+        />
+        <div *ngIf="showSugerenciasUniversidad && universidadesSugeridas.length > 0" class="sugerencias">
+          <div
+            *ngFor="let u of universidadesSugeridas"
+            (mousedown)="seleccionarUniversidad(u)"
+            class="sugerencia-item"
+          >
+            {{ u.nombre }}
+          </div>
+        </div>
+      </div>
       <button (click)="agregarUniversidad()" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600" [disabled]="!universidadParaAgregar || universidadesSeleccionadas.length >= 4">
         Añadir
       </button>
@@ -34,8 +67,7 @@
     </ul>
   </div>
 
-  <button (click)="comparar()" class="w-full bg-indigo-600 text-white px-4 py-3 rounded-md hover:bg-indigo-700 font-bold text-lg"
-          [disabled]="universidadesSeleccionadas.length < 2">
+  <button (click)="comparar()" class="w-full bg-indigo-600 text-white px-4 py-3 rounded-md hover:bg-indigo-700 font-bold text-lg" [disabled]="universidadesSeleccionadas.length < 2">
     Comparar ({{ universidadesSeleccionadas.length }})
   </button>
 </div>
