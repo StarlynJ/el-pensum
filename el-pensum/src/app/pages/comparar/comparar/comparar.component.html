@@ -28,16 +28,25 @@
           </h3>
           
           <ng-container *ngFor="let campo of grupo.campos; let isOdd = odd">
-            <div class="p-3 font-medium text-gray-700 border-b" [ngClass]="{ 'bg-white': isOdd, 'bg-gray-50': !isOdd }">{{ campo.label }}</div>
+            <div class="p-3 font-medium text-gray-700 border-b flex items-center" [ngClass]="{ 'bg-white': isOdd, 'bg-gray-50': !isOdd }">{{ campo.label }}</div>
             
             <div *ngFor="let cu of comparacion" class="p-3 text-center border-b" [ngClass]="{ 'bg-white': isOdd, 'bg-gray-50': !isOdd }">
               <ng-container [ngSwitch]="campo.tipo">
+                
                 <a *ngSwitchCase="'enlace'" [href]="obtenerValor(cu, campo.key)" target="_blank" class="text-blue-500 hover:underline">
                   Ver Documento
                 </a>
+                
                 <span *ngSwitchCase="'moneda'">
                   {{ obtenerValor(cu, campo.key) | currency:'USD':'symbol':'1.2-2' }}
                 </span>
+
+                <div *ngSwitchCase="'imagenes'" class="flex gap-2 overflow-x-auto p-1">
+                    <ng-container *ngIf="obtenerValor(cu, campo.key) as imagenes">
+                        <img *ngFor="let img of imagenes" [src]="img" class="h-20 w-28 object-cover rounded-md shadow-sm">
+                    </ng-container>
+                </div>
+
                 <span *ngSwitchDefault>
                   {{ obtenerValor(cu, campo.key) }}
                 </span>

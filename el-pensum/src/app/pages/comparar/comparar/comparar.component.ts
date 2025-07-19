@@ -37,6 +37,7 @@ export class CompararComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    // This logic correctly determines whether to load the basic or advanced comparison.
     const state = this.router.getCurrentNavigation()?.extras.state as any;
     if (state && state.mode) {
       this.handleAdvancedComparison(state);
@@ -101,7 +102,7 @@ export class CompararComponent implements OnInit {
   }
 
   private loadLegacyComparison(): void {
-    this.setupCareerComparisonFields();
+    this.setupCareerComparisonFields(); // Use the updated fields
     const idsString = this.route.snapshot.paramMap.get('ids');
     const slugCarrera = this.route.snapshot.paramMap.get('slugCarrera');
 
@@ -119,8 +120,6 @@ export class CompararComponent implements OnInit {
           this.error = 'No se encontró información para todas las universidades en la carrera seleccionada.';
         }
         this.comparacion = data.sort((a, b) => ids.indexOf(a.universidadId) - ids.indexOf(b.universidadId));
-        // --- CORRECCIÓN AQUÍ ---
-        // Le decimos a TypeScript que trate a 'c' como CarreraUniversitaria
         this.universidades = this.comparacion.map(c => (c as CarreraUniversitaria).universidad).filter((u): u is Universidad => !!u);
         this.isLoading = false;
       },
@@ -153,35 +152,67 @@ export class CompararComponent implements OnInit {
 
   private setupCareerComparisonFields(): void {
     this.gruposDeCampos = [
-      { nombre: 'Detalles Académicos', campos: [
-        { label: 'Duración (años)', key: 'duracionAnios', tipo: 'texto' },
-        { label: 'Total de Créditos', key: 'totalCreditos', tipo: 'texto' },
-        { label: 'Pensum (PDF)', key: 'pensumPdf', tipo: 'enlace' }
-      ]},
-      { nombre: 'Costos Generales (Universidad)', campos: [
-        { label: 'Costo Inscripción', key: 'universidad.costoInscripcion', tipo: 'moneda' },
-        { label: 'Costo Admisión', key: 'universidad.costoAdmision', tipo: 'moneda' },
-        { label: 'Costo por Crédito', key: 'universidad.costoCredito', tipo: 'moneda' },
-        { label: 'Costo Carnet', key: 'universidad.costoCarnet', tipo: 'moneda' }
-      ]},
-      { nombre: 'Detalles Adicionales', campos: [
-        { label: 'Costos Adicionales', key: 'costosAdicionales', tipo: 'texto' }
-      ]}
+      {
+        nombre: 'Información General',
+        campos: [
+          { label: 'País', key: 'universidad.pais', tipo: 'texto' },
+          { label: 'Ciudad', key: 'universidad.ciudad', tipo: 'texto' },
+          { label: 'Ranking Nacional', key: 'universidad.rankingNacional', tipo: 'texto' },
+          { label: 'Ranking Mundial', key: 'universidad.rankingMundial', tipo: 'texto' },
+        ]
+      },
+      {
+        nombre: 'Detalles Académicos',
+        campos: [
+          { label: 'Duración (Años)', key: 'duracionAnios', tipo: 'texto' },
+          { label: 'Créditos Totales', key: 'totalCreditos', tipo: 'texto' },
+          { label: 'Pensum (PDF)', key: 'pensumPdf', tipo: 'enlace' },
+        ]
+      },
+      {
+        nombre: 'Costos',
+        campos: [
+          { label: 'Costo por Crédito', key: 'universidad.costoCredito', tipo: 'moneda' },
+          { label: 'Costo de Inscripción', key: 'universidad.costoInscripcion', tipo: 'moneda' },
+          { label: 'Costo de Admisión', key: 'universidad.costoAdmision', tipo: 'moneda' },
+          { label: 'Costo del Carnet', key: 'universidad.costoCarnet', tipo: 'moneda' },
+        ]
+      },
+      {
+        nombre: 'Recursos del Campus',
+        campos: [
+          { label: 'Imágenes del Campus', key: 'universidad.imagenesCampus', tipo: 'imagenes' },
+        ]
+      }
     ];
   }
 
   private setupUniversityComparisonFields(): void {
     this.gruposDeCampos = [
-      { nombre: 'Información General', campos: [
-        { label: 'Siglas', key: 'siglas', tipo: 'texto' },
-        { label: 'Sitio Web', key: 'website', tipo: 'enlace' }
-      ]},
-      { nombre: 'Costos Generales', campos: [
-        { label: 'Costo Inscripción', key: 'costoInscripcion', tipo: 'moneda' },
-        { label: 'Costo Admisión', key: 'costoAdmision', tipo: 'moneda' },
-        { label: 'Costo por Crédito', key: 'costoCredito', tipo: 'moneda' },
-        { label: 'Costo Carnet', key: 'costoCarnet', tipo: 'moneda' }
-      ]}
+      {
+        nombre: 'Información General',
+        campos: [
+          { label: 'País', key: 'pais', tipo: 'texto' },
+          { label: 'Ciudad', key: 'ciudad', tipo: 'texto' },
+          { label: 'Ranking Nacional', key: 'rankingNacional', tipo: 'texto' },
+          { label: 'Ranking Mundial', key: 'rankingMundial', tipo: 'texto' },
+        ]
+      },
+      {
+        nombre: 'Costos Generales',
+        campos: [
+            { label: 'Costo por Crédito', key: 'costoCredito', tipo: 'moneda' },
+            { label: 'Costo de Inscripción', key: 'costoInscripcion', tipo: 'moneda' },
+            { label: 'Costo de Admisión', key: 'costoAdmision', tipo: 'moneda' },
+            { label: 'Costo del Carnet', key: 'costoCarnet', tipo: 'moneda' },
+        ]
+      },
+      {
+        nombre: 'Recursos del Campus',
+        campos: [
+          { label: 'Imágenes del Campus', key: 'imagenesCampus', tipo: 'imagenes' },
+        ]
+      }
     ];
   }
 }
