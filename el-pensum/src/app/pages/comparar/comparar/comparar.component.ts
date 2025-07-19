@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+// ✅ 1. Importamos HostListener para escuchar eventos del teclado (opcional pero recomendado)
+import { Component, OnInit, HostListener } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule, CurrencyPipe } from '@angular/common';
 import { forkJoin, of, throwError, Observable } from 'rxjs';
@@ -28,6 +29,25 @@ export class CompararComponent implements OnInit {
   error = '';
   gruposDeCampos: any[] = [];
 
+  // ✅ 2. Propiedades para manejar el estado de la galería modal
+  isModalVisible = false;
+  modalImages: string[] = [];
+  currentImageIndex = 0;
+
+  // ✅ 7. Escucha eventos del teclado en toda la ventana
+  @HostListener('window:keydown', ['$event'])
+  handleKeyboardEvent(event: KeyboardEvent) {
+    if (this.isModalVisible) {
+      if (event.key === 'ArrowRight') {
+        this.nextImage();
+      } else if (event.key === 'ArrowLeft') {
+        this.prevImage();
+      } else if (event.key === 'Escape') {
+        this.closeModal();
+      }
+    }
+  }
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -37,7 +57,6 @@ export class CompararComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // This logic correctly determines whether to load the basic or advanced comparison.
     const state = this.router.getCurrentNavigation()?.extras.state as any;
     if (state && state.mode) {
       this.handleAdvancedComparison(state);
@@ -46,7 +65,35 @@ export class CompararComponent implements OnInit {
     }
   }
 
-  private handleAdvancedComparison(state: any): void {
+  // ✅ 3. Lógica para abrir el modal
+  openModal(images: string[], index: number): void {
+    if (images && images.length > 0) {
+      this.modalImages = images;
+      this.currentImageIndex = index;
+      this.isModalVisible = true;
+      document.body.classList.add('modal-open'); // Evita el scroll del fondo
+    }
+  }
+
+  // ✅ 4. Lógica para cerrar el modal
+  closeModal(): void {
+    this.isModalVisible = false;
+    document.body.classList.remove('modal-open'); // Restaura el scroll
+  }
+
+  // ✅ 5. Lógica para ir a la siguiente imagen
+  nextImage(): void {
+    this.currentImageIndex = (this.currentImageIndex + 1) % this.modalImages.length;
+  }
+
+  // ✅ 6. Lógica para ir a la imagen anterior
+  prevImage(): void {
+    this.currentImageIndex = (this.currentImageIndex - 1 + this.modalImages.length) % this.modalImages.length;
+  }
+  
+  // --- El resto de tus métodos permanecen sin cambios ---
+
+  private handleAdvancedComparison(state: any): void { // ...
     if (state.mode === 'Universidades') {
       this.carreraNombre = 'Comparando Universidades';
       this.setupUniversityComparisonFields();
@@ -58,7 +105,7 @@ export class CompararComponent implements OnInit {
     }
   }
 
-  private loadUniversidadesComparison(uId1: number, uId2: number): void {
+  private loadUniversidadesComparison(uId1: number, uId2: number): void { // ...
     forkJoin({
       u1: this.universidadService.getUniversidad(uId1),
       u2: this.universidadService.getUniversidad(uId2)
@@ -72,7 +119,7 @@ export class CompararComponent implements OnInit {
       });
   }
 
-  private loadCarrerasComparison(data: { carreraId: number, universidadId: number }[]): void {
+  private loadCarrerasComparison(data: { carreraId: number, universidadId: number }[]): void { // ...
     const [comp1, comp2] = data;
     forkJoin({
       carrera1: this.carreraService.getCarrera(comp1.carreraId).pipe(catchError(() => of(null))),
@@ -101,8 +148,8 @@ export class CompararComponent implements OnInit {
     });
   }
 
-  private loadLegacyComparison(): void {
-    this.setupCareerComparisonFields(); // Use the updated fields
+  private loadLegacyComparison(): void { // ...
+    this.setupCareerComparisonFields();
     const idsString = this.route.snapshot.paramMap.get('ids');
     const slugCarrera = this.route.snapshot.paramMap.get('slugCarrera');
 
@@ -127,7 +174,7 @@ export class CompararComponent implements OnInit {
     });
   }
 
-  obtenerValor(item: any, key: string): any {
+  obtenerValor(item: any, key: string): any { // ...
     if (!item) return 'N/D';
     const keys = key.split('.');
     let valor: any = item;
@@ -139,18 +186,18 @@ export class CompararComponent implements OnInit {
     return valor ?? 'N/D';
   }
 
-  private deslugify(slug: string): string {
+  private deslugify(slug: string): string { // ...
     return slug.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
   }
 
-  private handleError(err: any, customMessage?: string): Observable<null> {
+  private handleError(err: any, customMessage?: string): Observable<null> { // ...
     this.error = customMessage || err?.message || 'Ocurrió un error al cargar los datos.';
     this.isLoading = false;
     console.error('Error en CompararComponent:', err);
     return of(null);
   }
 
-  private setupCareerComparisonFields(): void {
+  private setupCareerComparisonFields(): void { // ...
     this.gruposDeCampos = [
       {
         nombre: 'Información General',
@@ -187,7 +234,7 @@ export class CompararComponent implements OnInit {
     ];
   }
 
-  private setupUniversityComparisonFields(): void {
+  private setupUniversityComparisonFields(): void { // ...
     this.gruposDeCampos = [
       {
         nombre: 'Información General',

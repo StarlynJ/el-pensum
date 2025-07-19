@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+// ✅ 1. Importamos HostListener
+import { Component, OnInit, HostListener } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CommonModule, CurrencyPipe } from '@angular/common';
 import { forkJoin, of, throwError, Observable } from 'rxjs';
@@ -28,6 +29,25 @@ export class AdvancedResultsComponent implements OnInit {
   error: string | null = null;
   gruposDeCampos: any[] = [];
 
+  // ✅ 2. Propiedades para manejar el estado de la galería modal
+  isModalVisible = false;
+  modalImages: string[] = [];
+  currentImageIndex = 0;
+
+  // ✅ 6. Escucha eventos del teclado en toda la ventana
+  @HostListener('window:keydown', ['$event'])
+  handleKeyboardEvent(event: KeyboardEvent) {
+    if (this.isModalVisible) {
+      if (event.key === 'ArrowRight') {
+        this.nextImage();
+      } else if (event.key === 'ArrowLeft') {
+        this.prevImage();
+      } else if (event.key === 'Escape') {
+        this.closeModal();
+      }
+    }
+  }
+
   constructor(
     private route: ActivatedRoute,
     private cuService: CarreraUniversitariaService,
@@ -44,7 +64,34 @@ export class AdvancedResultsComponent implements OnInit {
     }
   }
 
-  private parseSlugAndLoadData(slug: string): void {
+  // ✅ 3. Lógica para abrir el modal
+  openModal(images: string[], index: number): void {
+    if (images && images.length > 0) {
+      this.modalImages = images;
+      this.currentImageIndex = index;
+      this.isModalVisible = true;
+      document.body.classList.add('modal-open');
+    }
+  }
+
+  // ✅ 4. Lógica para cerrar el modal
+  closeModal(): void {
+    this.isModalVisible = false;
+    document.body.classList.remove('modal-open');
+  }
+
+  // ✅ 5. Lógica para navegar entre imágenes
+  nextImage(): void {
+    this.currentImageIndex = (this.currentImageIndex + 1) % this.modalImages.length;
+  }
+
+  prevImage(): void {
+    this.currentImageIndex = (this.currentImageIndex - 1 + this.modalImages.length) % this.modalImages.length;
+  }
+
+  // --- El resto de tus métodos permanecen sin cambios ---
+
+  private parseSlugAndLoadData(slug: string): void { //...
     const uniRegex = /^u(\d+)-vs-u(\d+)$/;
     const uniMatch = slug.match(uniRegex);
 
@@ -52,7 +99,7 @@ export class AdvancedResultsComponent implements OnInit {
       const uId1 = parseInt(uniMatch[1], 10);
       const uId2 = parseInt(uniMatch[2], 10);
       this.titulo = 'Comparando Universidades';
-      this.setupUniversityComparisonFields(); // Usa la nueva lista de campos
+      this.setupUniversityComparisonFields();
       this.loadUniversidadesComparison(uId1, uId2);
       return;
     }
@@ -65,7 +112,7 @@ export class AdvancedResultsComponent implements OnInit {
         { carreraId: parseInt(careerMatch[1], 10), universidadId: parseInt(careerMatch[2], 10) },
         { carreraId: parseInt(careerMatch[3], 10), universidadId: parseInt(careerMatch[4], 10) }
       ];
-      this.setupCareerComparisonFields(); // Usa la nueva lista de campos
+      this.setupCareerComparisonFields();
       this.loadCarrerasComparison(dataToLoad);
       return;
     }
@@ -73,7 +120,7 @@ export class AdvancedResultsComponent implements OnInit {
     this.handleError('El formato de comparación en la URL es inválido.');
   }
 
-  private loadUniversidadesComparison(uId1: number, uId2: number): void {
+  private loadUniversidadesComparison(uId1: number, uId2: number): void { //...
     forkJoin({
       u1: this.universidadService.getUniversidad(uId1),
       u2: this.universidadService.getUniversidad(uId2)
@@ -87,7 +134,7 @@ export class AdvancedResultsComponent implements OnInit {
       });
   }
 
-  private loadCarrerasComparison(data: { carreraId: number, universidadId: number }[]): void {
+  private loadCarrerasComparison(data: { carreraId: number, universidadId: number }[]): void { //...
     const [comp1, comp2] = data;
     forkJoin({
       carrera1: this.carreraService.getCarrera(comp1.carreraId).pipe(catchError(() => of(null))),
@@ -125,8 +172,7 @@ export class AdvancedResultsComponent implements OnInit {
     });
   }
 
-  // ✅ ================== MÉTODO ACTUALIZADO ==================
-  private setupCareerComparisonFields(): void {
+  private setupCareerComparisonFields(): void { //...
     this.gruposDeCampos = [
       {
         nombre: 'Información General',
@@ -163,8 +209,7 @@ export class AdvancedResultsComponent implements OnInit {
     ];
   }
 
-  // ✅ ================== MÉTODO ACTUALIZADO ==================
-  private setupUniversityComparisonFields(): void {
+  private setupUniversityComparisonFields(): void { //...
     this.gruposDeCampos = [
       {
         nombre: 'Información General',
@@ -193,7 +238,7 @@ export class AdvancedResultsComponent implements OnInit {
     ];
   }
   
-  obtenerValor(item: any, key: string): any {
+  obtenerValor(item: any, key: string): any { //...
     if (!item) return 'N/D';
     const keys = key.split('.');
     let valor: any = item;
@@ -205,7 +250,7 @@ export class AdvancedResultsComponent implements OnInit {
     return valor ?? 'N/D';
   }
 
-  private handleError(message: any): Observable<null> {
+  private handleError(message: any): Observable<null> { //...
     this.error = typeof message === 'string' ? message : (message?.message || 'Ocurrió un error inesperado.');
     this.isLoading = false;
     console.error('Error en AdvancedResultsComponent:', message);

@@ -32,7 +32,10 @@
                   
                   <div *ngSwitchCase="'imagenes'" class="flex gap-2 overflow-x-auto p-1 justify-center">
                       <ng-container *ngIf="obtenerValor(item, campo.key) as imagenes">
-                          <img *ngFor="let img of imagenes" [src]="img" class="h-20 w-28 object-cover rounded-md shadow-sm">
+                          <img *ngFor="let img of imagenes; let i = index" 
+                               [src]="img" 
+                               class="h-20 w-28 object-cover rounded-md shadow-sm cursor-pointer hover:opacity-80 transition-opacity"
+                               (click)="openModal(imagenes, i)">
                       </ng-container>
                   </div>
                   
@@ -53,5 +56,17 @@
   <div *ngIf="error" class="text-center py-10 bg-red-100 text-red-700 p-4 rounded-lg">
     <p class="font-bold">¡Ocurrió un error!</p>
     <p>{{ error }}</p>
+  </div>
+</div>
+
+<div *ngIf="isModalVisible" class="modal-overlay" (click)="closeModal()">
+  <button class="modal-close-button" (click)="closeModal()">×</button>
+  
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <button class="modal-nav-button prev" (click)="prevImage()">&#10094;</button>
+    
+    <img [src]="modalImages[currentImageIndex]" alt="Imagen del campus" class="modal-image">
+    
+    <button class="modal-nav-button next" (click)="nextImage()">&#10095;</button>
   </div>
 </div>
