@@ -22,7 +22,7 @@ export class FormularioCompararComponent implements OnInit {
   universidadesDisponibles: Universidad[] = [];
   universidadesSeleccionadas: Universidad[] = [];
 
-  // --- Modelos para la selección (tu lógica original) ---
+  // --- Modelos para la selección ---
   carreraSeleccionada: Carrera | null = null;
   universidadParaAgregar: Universidad | null = null;
 
@@ -95,13 +95,11 @@ export class FormularioCompararComponent implements OnInit {
     this.showSugerenciasUniversidad = false;
   }
   
-  // --- Métodos originales (con mínimas adaptaciones) ---
   onCarreraSeleccionada(): void {
     if (!this.carreraSeleccionada?.id) return;
     
     this.universidadesSeleccionadas = [];
     this.universidadParaAgregar = null;
-    this.universidadSearchText = '';
     this.universidadSearchText = '';
 
     this.carreraUniversitariaService.getUniversidadesPorCarrera(this.carreraSeleccionada.id)
@@ -122,25 +120,19 @@ export class FormularioCompararComponent implements OnInit {
     this.universidadesSeleccionadas = this.universidadesSeleccionadas.filter(u => u.id !== idUniversidad);
   }
 
-  // --- ESTE MÉTODO CUMPLE EL "CONTRATO" ---
+  // ✅ ================== MÉTODO ACTUALIZADO ==================
   comparar(): void {
     if (this.universidadesSeleccionadas.length < 2 || !this.carreraSeleccionada?.id) {
       alert('Debes seleccionar una carrera y entre 2 y 4 universidades para comparar.');
       return;
     }
 
-    // 1. Crea el string de IDs separados por comas (Ej: "4,5")
     const ids = this.universidadesSeleccionadas.map(u => u.id).join(',');
     
-    // 2. Crea el slug de la carrera (Ej: "medicina")
-    const slugCarrera = this.slugify(this.carreraSeleccionada.nombre);
+    // Obtenemos el ID de la carrera en lugar del nombre
+    const carreraId = this.carreraSeleccionada.id;
 
-    // 3. Navega a la ruta que `comparar.component.ts` espera
-    this.router.navigate([`/comparar`, ids, slugCarrera]);
-  }
-  
-  private slugify(text: string): string {
-    if (!text) return '';
-    return text.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+    // Navegamos usando el ID de la carrera, que es seguro para la URL
+    this.router.navigate([`/comparar`, ids, carreraId]);
   }
 }

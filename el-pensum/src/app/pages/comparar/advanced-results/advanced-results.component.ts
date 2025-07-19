@@ -1,5 +1,6 @@
-// ✅ 1. Importamos HostListener
+// ✅ 1. Importamos HostListener, DomSanitizer y SafeResourceUrl
 import { Component, OnInit, HostListener } from '@angular/core';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { CommonModule, CurrencyPipe } from '@angular/common';
 import { forkJoin, of, throwError, Observable } from 'rxjs';
@@ -29,22 +30,25 @@ export class AdvancedResultsComponent implements OnInit {
   error: string | null = null;
   gruposDeCampos: any[] = [];
 
-  // ✅ 2. Propiedades para manejar el estado de la galería modal
+  // Propiedades para la galería de imágenes
   isModalVisible = false;
   modalImages: string[] = [];
   currentImageIndex = 0;
 
-  // ✅ 6. Escucha eventos del teclado en toda la ventana
+  // ✅ 2. Propiedades para el visor de PDF
+  isPdfModalVisible = false;
+  safePdfUrl: SafeResourceUrl | null = null;
+
   @HostListener('window:keydown', ['$event'])
   handleKeyboardEvent(event: KeyboardEvent) {
     if (this.isModalVisible) {
-      if (event.key === 'ArrowRight') {
-        this.nextImage();
-      } else if (event.key === 'ArrowLeft') {
-        this.prevImage();
-      } else if (event.key === 'Escape') {
-        this.closeModal();
-      }
+      if (event.key === 'ArrowRight') this.nextImage();
+      else if (event.key === 'ArrowLeft') this.prevImage();
+      else if (event.key === 'Escape') this.closeModal();
+    }
+    // ✅ 7. Añadimos el listener para cerrar el modal del PDF con Escape
+    if (this.isPdfModalVisible && event.key === 'Escape') {
+      this.closePdfModal();
     }
   }
 
@@ -52,7 +56,9 @@ export class AdvancedResultsComponent implements OnInit {
     private route: ActivatedRoute,
     private cuService: CarreraUniversitariaService,
     private universidadService: UniversidadService,
-    private carreraService: CarreraService
+    private carreraService: CarreraService,
+    // ✅ 3. Inyectamos el DomSanitizer
+    private sanitizer: DomSanitizer
   ) {}
 
   ngOnInit(): void {
@@ -64,7 +70,7 @@ export class AdvancedResultsComponent implements OnInit {
     }
   }
 
-  // ✅ 3. Lógica para abrir el modal
+  // --- Métodos para la galería de imágenes ---
   openModal(images: string[], index: number): void {
     if (images && images.length > 0) {
       this.modalImages = images;
@@ -74,13 +80,11 @@ export class AdvancedResultsComponent implements OnInit {
     }
   }
 
-  // ✅ 4. Lógica para cerrar el modal
   closeModal(): void {
     this.isModalVisible = false;
     document.body.classList.remove('modal-open');
   }
 
-  // ✅ 5. Lógica para navegar entre imágenes
   nextImage(): void {
     this.currentImageIndex = (this.currentImageIndex + 1) % this.modalImages.length;
   }
@@ -89,9 +93,25 @@ export class AdvancedResultsComponent implements OnInit {
     this.currentImageIndex = (this.currentImageIndex - 1 + this.modalImages.length) % this.modalImages.length;
   }
 
+  // ✅ 4. Lógica para abrir el modal del PDF
+  openPdfModal(pdfUrl: string): void {
+    if (pdfUrl) {
+      this.safePdfUrl = this.sanitizer.bypassSecurityTrustResourceUrl(pdfUrl);
+      this.isPdfModalVisible = true;
+      document.body.classList.add('modal-open');
+    }
+  }
+
+  // ✅ 5. Lógica para cerrar el modal del PDF
+  closePdfModal(): void {
+    this.isPdfModalVisible = false;
+    this.safePdfUrl = null;
+    document.body.classList.remove('modal-open');
+  }
+  
   // --- El resto de tus métodos permanecen sin cambios ---
 
-  private parseSlugAndLoadData(slug: string): void { //...
+  private parseSlugAndLoadData(slug: string): void {
     const uniRegex = /^u(\d+)-vs-u(\d+)$/;
     const uniMatch = slug.match(uniRegex);
 
@@ -120,7 +140,7 @@ export class AdvancedResultsComponent implements OnInit {
     this.handleError('El formato de comparación en la URL es inválido.');
   }
 
-  private loadUniversidadesComparison(uId1: number, uId2: number): void { //...
+  private loadUniversidadesComparison(uId1: number, uId2: number): void {
     forkJoin({
       u1: this.universidadService.getUniversidad(uId1),
       u2: this.universidadService.getUniversidad(uId2)
@@ -134,7 +154,7 @@ export class AdvancedResultsComponent implements OnInit {
       });
   }
 
-  private loadCarrerasComparison(data: { carreraId: number, universidadId: number }[]): void { //...
+  private loadCarrerasComparison(data: { carreraId: number, universidadId: number }[]): void {
     const [comp1, comp2] = data;
     forkJoin({
       carrera1: this.carreraService.getCarrera(comp1.carreraId).pipe(catchError(() => of(null))),
@@ -172,7 +192,7 @@ export class AdvancedResultsComponent implements OnInit {
     });
   }
 
-  private setupCareerComparisonFields(): void { //...
+  private setupCareerComparisonFields(): void {
     this.gruposDeCampos = [
       {
         nombre: 'Información General',
@@ -209,7 +229,7 @@ export class AdvancedResultsComponent implements OnInit {
     ];
   }
 
-  private setupUniversityComparisonFields(): void { //...
+  private setupUniversityComparisonFields(): void {
     this.gruposDeCampos = [
       {
         nombre: 'Información General',
@@ -238,7 +258,7 @@ export class AdvancedResultsComponent implements OnInit {
     ];
   }
   
-  obtenerValor(item: any, key: string): any { //...
+  obtenerValor(item: any, key: string): any {
     if (!item) return 'N/D';
     const keys = key.split('.');
     let valor: any = item;
@@ -250,7 +270,7 @@ export class AdvancedResultsComponent implements OnInit {
     return valor ?? 'N/D';
   }
 
-  private handleError(message: any): Observable<null> { //...
+  private handleError(message: any): Observable<null> {
     this.error = typeof message === 'string' ? message : (message?.message || 'Ocurrió un error inesperado.');
     this.isLoading = false;
     console.error('Error en AdvancedResultsComponent:', message);

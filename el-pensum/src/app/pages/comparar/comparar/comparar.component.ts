@@ -1,7 +1,9 @@
-// ✅ 1. Importamos HostListener para escuchar eventos del teclado (opcional pero recomendado)
+// ✅ 1. Importamos HostListener, DomSanitizer, SafeResourceUrl Y HttpErrorResponse
 import { Component, OnInit, HostListener } from '@angular/core';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule, CurrencyPipe } from '@angular/common';
+import { HttpErrorResponse } from '@angular/common/http';
 import { forkJoin, of, throwError, Observable } from 'rxjs';
 import { switchMap, catchError } from 'rxjs/operators';
 
@@ -29,22 +31,25 @@ export class CompararComponent implements OnInit {
   error = '';
   gruposDeCampos: any[] = [];
 
-  // ✅ 2. Propiedades para manejar el estado de la galería modal
+  // Propiedades para la galería de imágenes
   isModalVisible = false;
   modalImages: string[] = [];
   currentImageIndex = 0;
 
-  // ✅ 7. Escucha eventos del teclado en toda la ventana
+  // Propiedades para el visor de PDF
+  isPdfModalVisible = false;
+  safePdfUrl: SafeResourceUrl | null = null;
+
+
   @HostListener('window:keydown', ['$event'])
   handleKeyboardEvent(event: KeyboardEvent) {
     if (this.isModalVisible) {
-      if (event.key === 'ArrowRight') {
-        this.nextImage();
-      } else if (event.key === 'ArrowLeft') {
-        this.prevImage();
-      } else if (event.key === 'Escape') {
-        this.closeModal();
-      }
+      if (event.key === 'ArrowRight') this.nextImage();
+      else if (event.key === 'ArrowLeft') this.prevImage();
+      else if (event.key === 'Escape') this.closeModal();
+    }
+    if (this.isPdfModalVisible && event.key === 'Escape') {
+      this.closePdfModal();
     }
   }
 
@@ -53,7 +58,8 @@ export class CompararComponent implements OnInit {
     private router: Router,
     private cuService: CarreraUniversitariaService,
     private universidadService: UniversidadService,
-    private carreraService: CarreraService
+    private carreraService: CarreraService,
+    private sanitizer: DomSanitizer
   ) {}
 
   ngOnInit(): void {
@@ -65,35 +71,46 @@ export class CompararComponent implements OnInit {
     }
   }
 
-  // ✅ 3. Lógica para abrir el modal
+  // --- Métodos de Modales (sin cambios) ---
   openModal(images: string[], index: number): void {
     if (images && images.length > 0) {
       this.modalImages = images;
       this.currentImageIndex = index;
       this.isModalVisible = true;
-      document.body.classList.add('modal-open'); // Evita el scroll del fondo
+      document.body.classList.add('modal-open');
     }
   }
 
-  // ✅ 4. Lógica para cerrar el modal
   closeModal(): void {
     this.isModalVisible = false;
-    document.body.classList.remove('modal-open'); // Restaura el scroll
+    document.body.classList.remove('modal-open');
   }
 
-  // ✅ 5. Lógica para ir a la siguiente imagen
   nextImage(): void {
     this.currentImageIndex = (this.currentImageIndex + 1) % this.modalImages.length;
   }
 
-  // ✅ 6. Lógica para ir a la imagen anterior
   prevImage(): void {
     this.currentImageIndex = (this.currentImageIndex - 1 + this.modalImages.length) % this.modalImages.length;
   }
-  
-  // --- El resto de tus métodos permanecen sin cambios ---
 
-  private handleAdvancedComparison(state: any): void { // ...
+  openPdfModal(pdfUrl: string): void {
+    if (pdfUrl) {
+      this.safePdfUrl = this.sanitizer.bypassSecurityTrustResourceUrl(pdfUrl);
+      this.isPdfModalVisible = true;
+      document.body.classList.add('modal-open');
+    }
+  }
+
+  closePdfModal(): void {
+    this.isPdfModalVisible = false;
+    this.safePdfUrl = null;
+    document.body.classList.remove('modal-open');
+  }
+  
+  // --- Lógica de Carga de Datos ---
+  
+  private handleAdvancedComparison(state: any): void {
     if (state.mode === 'Universidades') {
       this.carreraNombre = 'Comparando Universidades';
       this.setupUniversityComparisonFields();
@@ -105,7 +122,7 @@ export class CompararComponent implements OnInit {
     }
   }
 
-  private loadUniversidadesComparison(uId1: number, uId2: number): void { // ...
+  private loadUniversidadesComparison(uId1: number, uId2: number): void {
     forkJoin({
       u1: this.universidadService.getUniversidad(uId1),
       u2: this.universidadService.getUniversidad(uId2)
@@ -119,7 +136,7 @@ export class CompararComponent implements OnInit {
       });
   }
 
-  private loadCarrerasComparison(data: { carreraId: number, universidadId: number }[]): void { // ...
+  private loadCarrerasComparison(data: { carreraId: number, universidadId: number }[]): void {
     const [comp1, comp2] = data;
     forkJoin({
       carrera1: this.carreraService.getCarrera(comp1.carreraId).pipe(catchError(() => of(null))),
@@ -148,33 +165,41 @@ export class CompararComponent implements OnInit {
     });
   }
 
-  private loadLegacyComparison(): void { // ...
+  private loadLegacyComparison(): void {
     this.setupCareerComparisonFields();
     const idsString = this.route.snapshot.paramMap.get('ids');
-    const slugCarrera = this.route.snapshot.paramMap.get('slugCarrera');
+    const carreraIdParam = this.route.snapshot.paramMap.get('carreraId');
 
-    if (!idsString || !slugCarrera) {
-      this.error = 'Faltan parámetros en la URL para realizar la comparación.';
-      this.isLoading = false;
+    if (!idsString || !carreraIdParam) {
+      this.handleError('Faltan parámetros en la URL para realizar la comparación.');
       return;
     }
-    const ids = idsString.split(',').map(id => +id);
-    this.carreraNombre = this.deslugify(slugCarrera);
 
-    this.cuService.compararCarreras(ids, this.carreraNombre).subscribe({
-      next: (data) => {
-        if (data.length < ids.length) {
-          this.error = 'No se encontró información para todas las universidades en la carrera seleccionada.';
+    const ids = idsString.split(',').map(id => +id);
+    const carreraId = parseInt(carreraIdParam, 10);
+
+    this.carreraService.getCarrera(carreraId).pipe(
+      switchMap(carrera => {
+        if (!carrera?.nombre) {
+          return throwError(() => new Error('La carrera especificada no fue encontrada.'));
         }
+        this.carreraNombre = carrera.nombre;
+        return this.cuService.compararCarreras(ids, this.carreraNombre);
+      }),
+      catchError(err => this.handleError(err, 'Ocurrió un error al cargar los datos de la comparación.'))
+    ).subscribe(data => {
+      // ✅ ================== CORRECCIÓN AQUÍ ==================
+      // Verificamos que 'data' no sea nulo antes de usarlo.
+      if (data) {
         this.comparacion = data.sort((a, b) => ids.indexOf(a.universidadId) - ids.indexOf(b.universidadId));
         this.universidades = this.comparacion.map(c => (c as CarreraUniversitaria).universidad).filter((u): u is Universidad => !!u);
-        this.isLoading = false;
-      },
-      error: (err) => this.handleError(err, 'Ocurrió un error al cargar los datos de la comparación.')
+      }
+      // Siempre detenemos la carga, incluso si 'data' es nulo (caso de error manejado)
+      this.isLoading = false;
     });
   }
 
-  obtenerValor(item: any, key: string): any { // ...
+  obtenerValor(item: any, key: string): any {
     if (!item) return 'N/D';
     const keys = key.split('.');
     let valor: any = item;
@@ -186,18 +211,20 @@ export class CompararComponent implements OnInit {
     return valor ?? 'N/D';
   }
 
-  private deslugify(slug: string): string { // ...
-    return slug.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-  }
-
-  private handleError(err: any, customMessage?: string): Observable<null> { // ...
-    this.error = customMessage || err?.message || 'Ocurrió un error al cargar los datos.';
+  private handleError(err: any, customMessage?: string): Observable<null> {
+    if (err instanceof HttpErrorResponse && typeof err.error === 'string' && err.error) {
+        this.error = err.error;
+    } else {
+        this.error = customMessage || err?.message || 'Ocurrió un error al cargar los datos.';
+    }
+    
     this.isLoading = false;
     console.error('Error en CompararComponent:', err);
     return of(null);
   }
 
-  private setupCareerComparisonFields(): void { // ...
+  // --- Métodos de configuración de campos (sin cambios) ---
+  private setupCareerComparisonFields(): void {
     this.gruposDeCampos = [
       {
         nombre: 'Información General',
@@ -234,7 +261,7 @@ export class CompararComponent implements OnInit {
     ];
   }
 
-  private setupUniversityComparisonFields(): void { // ...
+  private setupUniversityComparisonFields(): void {
     this.gruposDeCampos = [
       {
         nombre: 'Información General',

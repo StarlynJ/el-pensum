@@ -26,7 +26,11 @@
               <td *ngFor="let item of comparacion" class="py-3 px-4 text-gray-700 align-top text-center">
                 <ng-container [ngSwitch]="campo.tipo">
                   
-                  <a *ngSwitchCase="'enlace'" [href]="obtenerValor(item, campo.key)" target="_blank" class="text-blue-600 hover:underline">Ver Documento</a>
+                  <ng-container *ngSwitchCase="'enlace'">
+                    <button (click)="openPdfModal(obtenerValor(item, campo.key))" class="text-blue-500 hover:underline px-3 py-1 rounded bg-blue-50 hover:bg-blue-100">
+                      Ver Pensum
+                    </button>
+                  </ng-container>
                   
                   <span *ngSwitchCase="'moneda'">{{ obtenerValor(item, campo.key) | currency:'USD':'symbol':'1.2-2' }}</span>
                   
@@ -61,12 +65,15 @@
 
 <div *ngIf="isModalVisible" class="modal-overlay" (click)="closeModal()">
   <button class="modal-close-button" (click)="closeModal()">×</button>
-  
   <div class="modal-content" (click)="$event.stopPropagation()">
     <button class="modal-nav-button prev" (click)="prevImage()">&#10094;</button>
-    
     <img [src]="modalImages[currentImageIndex]" alt="Imagen del campus" class="modal-image">
-    
     <button class="modal-nav-button next" (click)="nextImage()">&#10095;</button>
+  </div>
+</div>
+<div *ngIf="isPdfModalVisible" class="modal-overlay" (click)="closePdfModal()">
+  <button class="modal-close-button" (click)="closePdfModal()">×</button>
+  <div class="pdf-modal-content" (click)="$event.stopPropagation()">
+    <iframe [src]="safePdfUrl" frameborder="0" width="100%" height="100%"></iframe>
   </div>
 </div>

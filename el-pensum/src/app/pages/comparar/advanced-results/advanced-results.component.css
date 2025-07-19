@@ -1,5 +1,5 @@
 /* ======================================================= */
-/* Estilos para la Galería Modal                           */
+/* Estilos para la Galería Modal de Imágenes               */
 /* ======================================================= */
 
 /*
@@ -83,4 +83,21 @@
   border: none;
   cursor: pointer;
   line-height: 1;
+}
+
+/* ======================================================= */
+/* ✅ NUEVO: Estilos para el Modal del Visor de PDF          */
+/* ======================================================= */
+
+/*
+ * Contenedor para el iframe del PDF.
+ * Ocupa la mayor parte de la pantalla.
+*/
+.pdf-modal-content {
+  position: relative;
+  width: 90vw;
+  height: 90vh;
+  background-color: #333; /* Color de fondo mientras carga el PDF */
+  border-radius: 8px;
+  overflow: hidden; /* Asegura que el iframe no se salga de los bordes redondeados */
 }

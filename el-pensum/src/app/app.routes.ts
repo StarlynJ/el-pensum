@@ -22,8 +22,9 @@ export const routes: Routes = [
   { path: 'inicio', component: InicioComponent },
   
   // --- RUTAS DE COMPARACIÓN SEPARADAS Y SIN CONFLICTO ---
-  { path: 'avanzado/:slug', component: AdvancedResultsComponent }, // <- RUTA NUEVA Y LIMPIA
-  { path: 'comparar/:ids/:slugCarrera', component: CompararComponent }, // <- RUTA ORIGINAL
+  { path: 'avanzado/:slug', component: AdvancedResultsComponent },
+  // ✅ CAMBIO: Reemplazamos el slug de texto por el ID numérico de la carrera
+  { path: 'comparar/:ids/:carreraId', component: CompararComponent },
 
   { path: 'asesoria', component: AsesoriaComponent },
   { path: 'becas', component: BecasComponent },
