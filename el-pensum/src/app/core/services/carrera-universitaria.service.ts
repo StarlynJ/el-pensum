@@ -4,14 +4,17 @@ import { Observable } from 'rxjs';
 import { CarreraUniversitaria } from '../models/carrera-universitaria.model';
 import { Universidad } from '../models/universidad.model';
 
+// Servicio para manejar la relación carrera-universidad
 @Injectable({
   providedIn: 'root'
 })
 export class CarreraUniversitariaService {
+  // URL base de la API
   private apiUrl = 'http://localhost:5265/api/carrerauniversitaria';
 
   constructor(private http: HttpClient) {}
 
+  // Devuelve los headers con el token (para endpoints protegidos)
   private obtenerHeaders(): HttpHeaders {
     const token = localStorage.getItem('token');
     return new HttpHeaders({
@@ -20,31 +23,20 @@ export class CarreraUniversitariaService {
     });
   }
 
+  // Trae las universidades que tienen una carrera específica
   getUniversidadesPorCarrera(idCarrera: number): Observable<Universidad[]> {
     return this.http.get<Universidad[]>(`${this.apiUrl}/universidades-por-carrera/${idCarrera}`);
   }
 
-  /**
-   * =================================================================
-   * MÉTODO CORREGIDO
-   * =================================================================
-   */
+  // Compara la misma carrera en varias universidades
   compararCarreras(universidadIds: number[], carreraNombre: string): Observable<CarreraUniversitaria[]> {
-    // 1. Empezamos con un objeto de parámetros vacío.
+    // Armamos los parámetros para la consulta
     let params = new HttpParams();
-
-    // 2. Iteramos sobre el array de IDs y añadimos cada uno.
-    //    HttpClient es lo suficientemente inteligente para crear ?ids=4&ids=6...
     universidadIds.forEach(id => {
       params = params.append('ids', id.toString());
     });
-
-    // 3. Añadimos el parámetro de la carrera.
     params = params.set('carrera', carreraNombre);
-
     const url = `${this.apiUrl}/comparacion`;
-    
-    // 4. Hacemos la llamada con los parámetros construidos correctamente.
     return this.http.get<CarreraUniversitaria[]>(url, { params });
   }
 

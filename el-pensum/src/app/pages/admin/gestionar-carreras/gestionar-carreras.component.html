@@ -1,9 +1,13 @@
+
+<!-- Título dinámico según si editamos o creamos -->
 <h2 class="text-xl md:text-2xl font-bold mb-4 text-center md:text-left mt-10 md:mt-0">
   {{ modoEdicion ? 'Editar Carrera' : 'Crear Carrera' }}
 </h2>
 
+<!-- Formulario para crear o editar una carrera -->
 <form (ngSubmit)="guardar()" #formCarrera="ngForm" class="mb-6">
   <div class="mb-4">
+    <!-- Campo para el nombre de la carrera -->
     <label class="block font-medium">Nombre:</label>
     <input
       type="text"
@@ -15,6 +19,7 @@
   </div>
 
   <div class="mb-4">
+    <!-- Campo para la URL del ícono (opcional) -->
     <label class="block font-medium">URL del Ícono (Opcional):</label>
     <input
       type="text"
@@ -25,9 +30,11 @@
     />
   </div>
   <div class="space-x-2">
+    <!-- Botón para guardar o actualizar -->
     <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">
       {{ modoEdicion ? 'Actualizar' : 'Guardar' }}
     </button>
+    <!-- Botón para cancelar edición -->
     <button
       type="button"
       (click)="cancelar()"
@@ -39,6 +46,7 @@
   </div>
 </form>
 
+<!-- Buscador de carreras -->
 <div class="mb-4">
     <div class="relative">
       <input 
@@ -48,20 +56,24 @@
         (input)="filtrarCarreras()"
         class="border px-3 py-2 w-full rounded pl-10"
       >
+      <!-- Icono de lupa decorativo -->
       <svg class="w-5 h-5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
       </svg>
     </div>
 </div>
 
-
+<!-- Mensaje de carga -->
 <div *ngIf="cargando" class="text-gray-500">Cargando carreras...</div>
+<!-- Mensaje de error -->
 <div *ngIf="error" class="text-red-600">{{ error }}</div>
 
+<!-- Mensaje si no hay carreras -->
 <div *ngIf="!cargando && carrerasFiltradas.length === 0" class="text-gray-600">
   {{ terminoBusqueda ? 'No se encontraron carreras con ese nombre.' : 'No hay carreras registradas.' }}
 </div>
 
+<!-- Tabla de carreras -->
 <table
   *ngIf="!cargando && carrerasFiltradas.length > 0"
   class="table-auto w-full border-collapse border border-gray-300"
@@ -73,16 +85,19 @@
     </tr>
   </thead>
   <tbody>
+    <!-- Mostramos cada carrera -->
     <tr *ngFor="let carrera of carrerasFiltradas">
       <td class="border px-4 py-2">{{ carrera.nombre }}</td>
       <td class="border px-4 py-2 text-center">
         <div class="flex flex-wrap justify-center gap-2">
+          <!-- Botón para editar -->
           <button
             class="bg-yellow-400 hover:bg-yellow-500 text-white px-3 py-1 text-sm rounded"
             (click)="editar(carrera)"
           >
             Editar
           </button>
+          <!-- Botón para eliminar -->
           <button
             class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 text-sm rounded"
             (click)="eliminar(carrera.id!)"

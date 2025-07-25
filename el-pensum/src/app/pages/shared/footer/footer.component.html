@@ -1,0 +1,44 @@
+<footer class="bg-blue-700 text-white">
+  <div class="container mx-auto px-6 py-12">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center md:text-left">
+      
+      <div>
+        <h3 class="font-bold text-xl mb-4">El Pensum</h3>
+        <p class="text-blue-200">
+          Tu guía definitiva para tomar la mejor decisión universitaria.
+        </p>
+      </div>
+
+      <div>
+        <h3 class="font-bold text-lg mb-4">Contacto</h3>
+        <ul class="space-y-2 text-blue-200">
+          <li>
+            <a>info&#64;elpensum.com</a>
+          </li>
+          <li>
+            <a>info&#64;elpensum.com</a>
+          </li>
+          <li>
+            <span>+1 (809) 123-4567</span>
+          </li>
+        </ul>
+      </div>
+
+      <div>
+        <h3 class="font-bold text-lg mb-4">Legal</h3>
+        <ul class="space-y-2 text-blue-200">
+          <li>
+            <a [href]="pdfLink" target="_blank" class="hover:text-white transition-colors">
+              Términos y Condiciones
+            </a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+
+    <div class="mt-12 pt-8 border-t border-blue-600 text-center text-blue-300 text-sm">
+      <p>&copy; {{ currentYear }} El Pensum. Todos los derechos reservados.</p>
+    </div>
+  </div>
+</footer>

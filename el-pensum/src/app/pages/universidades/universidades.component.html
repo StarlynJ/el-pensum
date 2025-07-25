@@ -1,0 +1,63 @@
+<div class="container mx-auto px-4 py-8 md:py-16 text-center">
+  <h1 class="text-4xl md:text-5xl font-bold text-gray-800 dark:text-white">Explora las Universidades</h1>
+  <p class="text-lg text-gray-600 dark:text-gray-300 mt-2">Encuentra tu lugar ideal para crecer profesionalmente.</p>
+</div>
+
+<main class="bg-gray-50 dark:bg-gray-900">
+  <div class="container mx-auto px-4 py-12">
+    
+    <div *ngIf="isLoading" class="text-center">
+      <p class="text-gray-500">Cargando universidades...</p>
+    </div>
+
+    <div *ngIf="error" class="text-center bg-red-100 text-red-700 p-4 rounded-lg">
+      <p>{{ error }}</p>
+    </div>
+
+    <div *ngIf="!isLoading && !error" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+      
+      <div *ngFor="let uni of universidades" class="uni-card">
+        <div class="h-32 flex items-center justify-center p-4 bg-gray-100 dark:bg-gray-700 rounded-t-lg">
+          <img [src]="uni.logoUrl" [alt]="uni.nombre" class="max-h-full max-w-full object-contain">
+        </div>
+        <div class="p-6 flex flex-col flex-grow">
+          <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-2">{{ uni.nombre }}</h2>
+          <p class="text-gray-500 dark:text-gray-400 mb-4">{{ uni.ciudad }}, {{ uni.pais }}</p>
+          <div class="mt-auto">
+            <button (click)="openModal(uni)" class="btn-primary w-full">
+              Ver más detalles
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</main>
+
+<div *ngIf="isModalVisible && selectedUniversidad" class="modal-overlay" (click)="closeModal()">
+  <div class="details-modal-content" (click)="$event.stopPropagation()">
+    <div class="p-6 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
+      <h2 class="text-2xl font-bold text-gray-900 dark:text-white">{{ selectedUniversidad.nombre }}</h2>
+      <button (click)="closeModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-white">&times;</button>
+    </div>
+    
+    <div class="p-6 max-h-[70vh] overflow-y-auto">
+      <h3 class="text-lg font-semibold mb-4 text-gray-800 dark:text-gray-200">Carreras Ofrecidas</h3>
+      <ul *ngIf="carrerasDeUniversidad.length > 0; else noCarreras" class="space-y-2 list-disc list-inside text-gray-600 dark:text-gray-300">
+        <li *ngFor="let cu of carrerasDeUniversidad">{{ cu.carrera?.nombre }}</li>
+      </ul>
+      <ng-template #noCarreras>
+        <p class="text-gray-500">No hay información de carreras para esta universidad.</p>
+      </ng-template>
+
+      <h3 class="text-lg font-semibold mt-8 mb-4 text-gray-800 dark:text-gray-200">Imágenes del Campus</h3>
+      <div *ngIf="selectedUniversidad.imagenesCampus.length > 0; else noImagenes" class="grid grid-cols-2 gap-4">
+        <img *ngFor="let img of selectedUniversidad.imagenesCampus" [src]="img" alt="Imagen del campus" class="w-full h-32 object-cover rounded-lg">
+      </div>
+      <ng-template #noImagenes>
+        <p class="text-gray-500">No hay imágenes del campus disponibles.</p>
+      </ng-template>
+    </div>
+  </div>
+</div>

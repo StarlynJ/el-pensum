@@ -1,28 +1,117 @@
-<div class="text-center mt-10 px-4">
-  <h1 class="text-3xl md:text-4xl font-bold mb-6">¡Bienvenido a El Pensum!</h1>
-  
-  <app-formulario-comparar></app-formulario-comparar>
+<section class="relative bg-gray-50 dark:bg-gray-900 pt-24 pb-16 md:pt-32 md:pb-24 overflow-hidden"> 
+  <div class="absolute top-16 left-12 w-24 h-24 text-blue-200 dark:text-blue-800 opacity-80 transform -rotate-12 pointer-events-none hidden md:block"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.26 10.147a60.438 60.438 0 0 0-.491 6.347A48.627 48.627 0 0 1 12 20.904a48.627 48.627 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.57 50.57 0 0 0-2.658-.813A59.906 59.906 0 0 1 12 3.493a59.903 59.903 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0 1 12 13.489a50.702 50.702 0 0 1 7.74-3.342M6.75 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm0 0v-3.675A55.378 55.378 0 0 1 12 8.443m-7.007 11.55A5.981 5.981 0 0 0 6.75 15.75v-1.5" /></svg></div> 
+  <div class="absolute top-24 right-16 w-20 h-20 text-blue-200 dark:text-blue-800 opacity-70 transform rotate-12 pointer-events-none hidden lg:block"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25" /></svg></div> 
+  <div class="absolute top-1/3 left-[15%] w-32 h-32 text-blue-200 dark:text-blue-800 opacity-80 transform rotate-6 pointer-events-none hidden xl:block"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9.004 9.004 0 0 0 8.716-6.747M12 21a9.004 9.004 0 0 1-8.716-6.747M12 21V3M4.28 9.751a9.004 9.004 0 0 1 15.44 0M4.28 14.249a9.004 9.004 0 0 0 15.44 0" /></svg></div> 
+  <div class="absolute top-1/2 right-[15%] w-36 h-36 text-blue-200 dark:text-blue-800 opacity-70 transform -rotate-6 pointer-events-none hidden xl:block"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5-2.25v.001M16.5 6.75v.001M3.75 6.75v.001M21 9v10.5a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 19.5V9Z" /></svg></div> 
+  <div class="absolute bottom-10 right-8 w-16 h-16 text-blue-200 dark:text-blue-800 opacity-60 transform -rotate-45 pointer-events-none hidden md:block"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" /></svg></div> 
+  <div class="absolute top-1/2 left-4 w-12 h-12 text-blue-200 dark:text-blue-800 opacity-70 transform rotate-6 pointer-events-none hidden lg:block"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" /></svg></div> 
+   
+  <div class="container mx-auto px-4 text-center relative z-10"> 
+    <h1 class="text-3xl sm:text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white leading-tight mb-2"> 
+      La página #1 para <span class="rainbow-text">comparar</span> 
+    </h1> 
+    <h2 class="text-2xl sm:text-3xl md:text-4xl font-semibold text-blue-600 dark:text-blue-400 mb-10 md:mb-12"> 
+      universidades y carreras 
+    </h2> 
+    <div class="max-w-4xl mx-auto"> 
+      <app-formulario-comparar></app-formulario-comparar> 
+      <div class="mt-6"> 
+        <button (click)="toggleAdvancedFilter()" class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-semibold py-2 px-4 rounded-lg transition duration-300 ease-in-out inline-flex items-center"> 
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6V4m0 16v-2m0-8v-2m0 4h.01M6 12H4m16 0h-2m-8-2h.01M12 18h.01M18 12h.01M6 18h.01M18 6h.01M6 6h.01" /></svg> 
+          Filtro Avanzado 
+        </button> 
+      </div> 
+      <div class="advanced-filter-container"> 
+        <div class="advanced-filter-overlay" [class.show]="showAdvancedFilter" (click)="toggleAdvancedFilter()"></div> 
+        <app-advanced-filter [class.show]="showAdvancedFilter" (close)="toggleAdvancedFilter()"></app-advanced-filter> 
+      </div> 
+    </div> 
+  </div> 
+ </section> 
 
-  <div class="mt-12 border-t pt-8 max-w-2xl mx-auto">
-    <h2 class="text-2xl font-semibold mb-4">¿Necesitas ayuda o buscas una oportunidad?</h2>
-    <p class="text-gray-600 mb-8">
-      Nuestro equipo de expertos está listo para guiarte. Además, no te pierdas las últimas oportunidades de becas que hemos recopilado para ti.
-    </p>
-    
-    <div class="flex flex-col md:flex-row justify-center items-center gap-4">
-      
-      <a routerLink="/asesoria" 
-         class="w-full md:w-auto bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg text-lg transition">
-        Solicitar Asesoría Gratuita
-      </a>
-      
-      <a routerLink="/becas" 
-         class="w-full md:w-auto bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg text-lg transition">
-        Ver Becas Disponibles
-      </a>
+ <section *ngIf="universidades.length > 0" class="py-12 bg-white dark:bg-gray-800"> 
+  <div class="container mx-auto"> 
+    <div class="logo-scroller"> 
+      <div class="logo-scroller-inner"> 
+        <div *ngFor="let uni of universidades" class="logo-item"> 
+          <img *ngIf="uni.logoUrl" [src]="uni.logoUrl" [alt]="uni.nombre" class="h-12 object-contain"> 
+        </div> 
+        <div *ngFor="let uni of universidades" class="logo-item" aria-hidden="true"> 
+          <img *ngIf="uni.logoUrl" [src]="uni.logoUrl" [alt]="uni.nombre" class="h-12 object-contain"> 
+        </div> 
+      </div> 
+    </div> 
+  </div> 
+ </section> 
 
-    </div>
-  </div>
-</div>
+ <section class="relative bg-blue-600 dark:bg-blue-700 md:max-w-[70%] md:mx-auto md:rounded-xl my-16 overflow-visible"> 
+  <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20"> 
+    <div class="relative flex flex-col md:flex-row items-center md:justify-end gap-8 md:gap-12"> 
+       
+      <div class="md:w-auto flex-shrink-0 z-10 relative"> 
+        <div class="bg-white/10 backdrop-blur-sm rounded-xl p-6 text-center shadow-lg border border-white/20"> 
+          <p class="font-semibold text-white mb-4">Recibe orientación personalizada y gratuita.</p> 
+          <a routerLink="/asesoria" class="inline-block bg-white text-blue-700 font-bold py-3 px-8 rounded-lg text-lg transition duration-300 hover:bg-blue-100 hover:shadow-xl transform hover:-translate-y-1"> 
+            Solicitar Asesoría 
+          </a> 
+        </div> 
+      </div> 
 
-<app-advanced-filter></app-advanced-filter>
+      <div class="md:w-2/5 text-center md:text-left z-10"> 
+        <h2 class="text-3xl md:text-4xl font-bold text-white mb-3"> 
+          ¿No estás seguro por dónde empezar? 
+        </h2> 
+        <p class="text-lg text-blue-200 dark:text-blue-200 max-w-2xl"> 
+          Nuestro equipo de asesores educativos está listo para guiarte en cada paso. 
+        </p> 
+      </div> 
+
+    </div> 
+  </div> 
+  <div class="hidden md:block absolute -bottom-12 left-[-10%] w-[380px] h-[450px] pointer-events-none"> 
+    <img src="https://i.ibb.co/n8zbMh5H/pngtree-collage-or-university-student-with-book-png-image-14069323.png"  
+         alt="Estudiante universitario"  
+         class="w-full h-full object-contain"> 
+  </div> 
+ </section> 
+
+
+ <section *ngIf="!isLoading && videoSection" class="relative bg-white dark:bg-gray-900 py-16 md:py-24 overflow-hidden"> 
+  <div class="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10"> 
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-16 items-center"> 
+      <div class="text-center md:text-left"> 
+        <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">{{ videoSection.tituloVideo }}</h2> 
+        <p class="text-lg text-gray-600 dark:text-gray-300 mb-8"> 
+          {{ videoSection.textoVideo }} 
+        </p> 
+        <div class="flex flex-row items-center gap-3 justify-center md:justify-start"> 
+          <a [href]="videoSection.urlCanalYoutube" target="_blank" rel="noopener noreferrer" class="btn btn-red">Suscríbete</a> 
+          <a [href]="videoSection.urlVideoYoutube" target="_blank" rel="noopener noreferrer" class="btn btn-primary">Ver Video Completo</a> 
+        </div> 
+      </div> 
+      <div *ngIf="safeVideoUrl" class="rounded-2xl overflow-hidden shadow-2xl w-full max-w-xs mx-auto aspect-[9/16]"> 
+        <iframe [src]="safeVideoUrl" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen class="w-full h-full"></iframe> 
+      </div> 
+    </div> 
+  </div> 
+ </section> 
+
+ <section *ngIf="becasDestacadas.length > 0" class="relative bg-gray-50 dark:bg-gray-800 py-16 md:py-24 overflow-hidden"> 
+  <div class="container mx-auto px-4 relative z-10"> 
+    <h2 class="text-3xl md:text-4xl font-bold text-center text-gray-900 dark:text-white mb-12">Becas Destacadas</h2> 
+    <div class="scroller"> 
+      <div class="scroller-inner"> 
+        <div *ngFor="let beca of becasDestacadas" class="beca-card"> 
+          <h3 class="font-bold text-lg mb-2">{{ beca.titulo }}</h3> 
+          <p class="text-gray-600 text-sm mb-4">{{ beca.resumen | slice:0:100 }}...</p> 
+          <a [href]="beca.enlace" target="_blank" class="text-blue-600 font-semibold hover:underline">Ver más</a> 
+        </div> 
+        <div *ngFor="let beca of becasDestacadas" class="beca-card" aria-hidden="true"> 
+          <h3 class="font-bold text-lg mb-2">{{ beca.titulo }}</h3> 
+          <p class="text-gray-600 text-sm mb-4">{{ beca.resumen | slice:0:100 }}...</p> 
+          <a [href]="beca.enlace" target="_blank" class="text-blue-600 font-semibold hover:underline">Ver más</a> 
+        </div> 
+      </div> 
+    </div> 
+  </div> 
+ </section>

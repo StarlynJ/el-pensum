@@ -1,4 +1,5 @@
-import { Component, OnInit, NgZone } from '@angular/core';
+// ✅ 1. Importamos Output y EventEmitter para la comunicación hijo -> padre
+import { Component, OnInit, NgZone, Output, EventEmitter } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -7,7 +8,6 @@ import { Carrera } from '../../../core/models/carrera.model';
 import { Universidad } from '../../../core/models/universidad.model';
 import { CarreraService } from '../../../core/services/carrera.service';
 import { UniversidadService } from '../../../core/services/universidad.service';
-// ✅ 1. Importamos el servicio que nos faltaba
 import { CarreraUniversitariaService } from '../../../core/services/carrera-universitaria.service';
 
 @Component({
@@ -18,13 +18,11 @@ import { CarreraUniversitariaService } from '../../../core/services/carrera-univ
   styleUrls: ['./advanced-filter.component.css']
 })
 export class AdvancedFilterComponent implements OnInit {
-  isFilterVisible = false;
-  compareForm: FormGroup;
+  @Output() close = new EventEmitter<void>();
 
+  compareForm: FormGroup;
   allCarreras: Carrera[] = [];
   allUniversidades: Universidad[] = [];
-
-  // ✅ 2. Listas para guardar las universidades filtradas por carrera
   universidadesParaCarrera1: Universidad[] = [];
   universidadesParaCarrera2: Universidad[] = [];
 
@@ -39,7 +37,6 @@ export class AdvancedFilterComponent implements OnInit {
     private fb: FormBuilder,
     private carreraService: CarreraService,
     private universidadService: UniversidadService,
-    // ✅ 3. Inyectamos el servicio
     private carreraUniversitariaService: CarreraUniversitariaService,
     private router: Router,
     private zone: NgZone
@@ -76,19 +73,18 @@ export class AdvancedFilterComponent implements OnInit {
       this.sugerencias[key].lista = this.allCarreras.filter(c => 
         c.nombre?.toLowerCase().includes(busqueda)
       );
-      // ✅ 4. Si se borra el texto de la carrera, reseteamos la lista de universidades filtradas
       if (!busqueda) {
         if (opcion === 1) this.universidadesParaCarrera1 = [];
         else this.universidadesParaCarrera2 = [];
       }
-    } else { // tipo es 'universidad'
-      // ✅ 5. Determinamos de qué lista filtrar: la específica de la carrera o la general
+    } else {
       const carreraId = this.compareForm.get(`carrera${opcion}Id`)?.value;
       const listaFuente = carreraId 
         ? (opcion === 1 ? this.universidadesParaCarrera1 : this.universidadesParaCarrera2)
         : this.allUniversidades;
       
       this.sugerencias[key].lista = listaFuente.filter(u => 
+        u.id != null &&
         u.nombre?.toLowerCase().includes(busqueda)
       );
     }
@@ -110,9 +106,7 @@ export class AdvancedFilterComponent implements OnInit {
     
     this.sugerencias[key].mostrar = false;
 
-    // ✅ 6. Lógica clave: Si se selecciona una carrera, cargamos sus universidades
     if (tipo === 'carrera' && item.id) {
-      // Reseteamos la selección de universidad actual
       this.compareForm.get(`universidad${opcion}Nombre`)?.setValue('');
       this.compareForm.get(`universidad${opcion}Id`)?.setValue(null);
 
@@ -133,16 +127,41 @@ export class AdvancedFilterComponent implements OnInit {
     setTimeout(() => this.sugerencias[key].mostrar = false, 200);
   }
 
-  toggleFilterVisibility(): void {
-    this.isFilterVisible = !this.isFilterVisible;
+  closePanel(): void {
+    this.close.emit();
   }
 
+  // ✅ ================== MÉTODO ACTUALIZADO ==================
   isCompareDisabled(): boolean {
     const { universidad1Id, universidad2Id, carrera1Id, carrera2Id } = this.compareForm.value;
-    const compUniversidades = universidad1Id && universidad2Id && !carrera1Id && !carrera2Id;
-    const compCarreras = carrera1Id && universidad1Id && carrera2Id && universidad2Id;
-    
-    return !(compUniversidades || compCarreras);
+
+    // Condición base: siempre se necesitan dos universidades
+    if (!universidad1Id || !universidad2Id) {
+      return true;
+    }
+
+    // Escenario 1: Comparación de universidades (sin carreras)
+    const esCompUniversidades = !carrera1Id && !carrera2Id;
+    if (esCompUniversidades) {
+      // Se deshabilita si las universidades son iguales
+      return universidad1Id === universidad2Id;
+    }
+
+    // Escenario 2: Comparación de carreras
+    // Para comparar carreras, ambas deben estar seleccionadas
+    const esCompCarreras = carrera1Id && carrera2Id;
+    if (esCompCarreras) {
+      // Si las universidades son las mismas...
+      if (universidad1Id === universidad2Id) {
+        // ...las carreras deben ser diferentes
+        return carrera1Id === carrera2Id;
+      }
+      // Si las universidades son diferentes, la comparación siempre es válida
+      return false;
+    }
+
+    // Si no se cumple ninguna condición válida (ej: solo una carrera seleccionada)
+    return true;
   }
 
   onSubmit(): void {
@@ -162,6 +181,6 @@ export class AdvancedFilterComponent implements OnInit {
       this.router.navigate(['/avanzado', slug]);
     });
     
-    this.toggleFilterVisibility();
+    this.closePanel();
   }
 }

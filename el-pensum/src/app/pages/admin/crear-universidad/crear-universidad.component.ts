@@ -5,6 +5,7 @@ import { Universidad } from '../../../core/models/universidad.model';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
+// Componente para crear o editar una universidad
 @Component({
   selector: 'app-crear-universidad',
   standalone: true,
@@ -13,7 +14,7 @@ import { FormsModule } from '@angular/forms';
   styleUrls: ['./crear-universidad.component.css']
 })
 export class CrearUniversidadComponent implements OnInit {
-  // ✅ INICIALIZAMOS LOS NUEVOS CAMPOS
+  // Modelo de universidad que se edita o crea
   universidad: Universidad = {
     id: 0,
     nombre: '',
@@ -29,15 +30,19 @@ export class CrearUniversidadComponent implements OnInit {
     costoCarnet: 0
   };
 
+  // Id de la universidad (si estamos editando)
   id: number | null = null;
+  // true si estamos editando, false si es nueva
   modoEdicion: boolean = false;
 
+  // Inyectamos servicios para navegar y pedir datos
   constructor(
     private universidadService: UniversidadService,
     private route: ActivatedRoute,
     private router: Router
   ) {}
 
+  // Al iniciar, revisamos si es edición o creación
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
       const idParam = params.get('id');
@@ -45,6 +50,7 @@ export class CrearUniversidadComponent implements OnInit {
         this.id = +idParam;
         this.modoEdicion = true;
 
+        // Si es edición, pedimos los datos de la universidad
         this.universidadService.getUniversidad(this.id).subscribe({
           next: (data: Universidad) => {
             this.universidad = data;
@@ -57,6 +63,7 @@ export class CrearUniversidadComponent implements OnInit {
     });
   }
 
+  // Guarda los cambios (crea o actualiza)
   guardar(): void {
     if (this.modoEdicion && this.id !== null) {
       this.universidadService.actualizarUniversidad(this.id, this.universidad).subscribe({
@@ -81,10 +88,12 @@ export class CrearUniversidadComponent implements OnInit {
     }
   }
 
+  // Agrega un campo para una nueva imagen del campus
   agregarImagen(): void {
     this.universidad.imagenesCampus.push('');
   }
 
+  // Elimina una imagen del campus
   eliminarImagen(index: number): void {
     this.universidad.imagenesCampus.splice(index, 1);
   }

@@ -1,14 +1,18 @@
+<!-- Título dinámico según modo -->
 <h2 class="text-xl md:text-2xl font-bold mb-6 text-center md:text-left mt-10 md:mt-0">
   {{ modoEdicion ? 'Editar Universidad' : 'Crear Nueva Universidad' }}
 </h2>
 
+<!-- Formulario para crear o editar universidad -->
 <form (ngSubmit)="guardar()" #formUniversidad="ngForm" class="space-y-4 max-w-2xl">
 
+  <!-- Campo: Nombre de la universidad -->
   <div>
     <label class="block font-medium">Nombre:</label>
     <input type="text" [(ngModel)]="universidad.nombre" name="nombre" required class="w-full border rounded px-3 py-2" />
   </div>
 
+  <!-- Fila: País, Ciudad, Rankings -->
   <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
     <div>
       <label class="block font-medium">País:</label>
@@ -28,6 +32,7 @@
     </div>
   </div>
 
+  <!-- Costos generales de la universidad -->
   <fieldset class="border p-4 rounded-md">
     <legend class="font-medium px-2">Costos Generales</legend>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">

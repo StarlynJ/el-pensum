@@ -1,8 +1,11 @@
+<!-- Título de la sección -->
 <h2 class="text-xl md:text-2xl font-bold mb-6 text-center md:text-left mt-10 md:mt-0">
   Asignar Carrera a Universidad
 </h2>
 
+<!-- Formulario para asignar carrera a universidad -->
 <form (ngSubmit)="guardar()" class="space-y-4 max-w-2xl">
+  <!-- Selects de universidad y carrera -->
   <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
     <div>
       <label class="block font-medium">Universidad:</label>
@@ -20,6 +23,7 @@
     </div>
   </div>
 
+  <!-- Detalles de la asignación -->
   <fieldset class="border p-4 rounded-md">
     <legend class="font-medium px-2">Detalles de la Asignación</legend>
     <div class="space-y-4">
@@ -38,6 +42,7 @@
         <input type="text" [(ngModel)]="asignacion.pensumPdf" name="pensumPdf" class="w-full border rounded px-2 py-1" />
       </div>
 
+      <!-- Campo para costos adicionales -->
       <div>
         <label class="block font-medium">Costos Adicionales (Opcional):</label>
         <textarea [(ngModel)]="asignacion.costosAdicionales" name="costosAdicionales" rows="3" class="w-full border rounded px-2 py-1" placeholder="Ej: Costo de laboratorios, seguro médico, etc."></textarea>
@@ -45,6 +50,7 @@
     </div>
   </fieldset>
 
+  <!-- Botón para guardar la asignación -->
   <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded mt-4 hover:bg-blue-700">
     Asignar Carrera
   </button>

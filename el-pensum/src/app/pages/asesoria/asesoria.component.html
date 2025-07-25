@@ -1,52 +1,64 @@
+<!-- Contenedor principal del formulario de asesoría -->
 <div class="container mx-auto max-w-2xl p-4 md:p-8">
+  <!-- Título y subtítulo -->
   <h1 class="text-2xl md:text-3xl font-bold text-center mb-2">Asesoría Personalizada</h1>
   <p class="text-center text-gray-600 mb-8">
     Completa el formulario y uno de nuestros expertos se pondrá en contacto contigo.
   </p>
 
+  <!-- Formulario de asesoría -->
   <form (ngSubmit)="enviarFormulario()" #asesoriaForm="ngForm" class="space-y-6 bg-white p-8 rounded-lg shadow-md">
-    
+    <!-- Fila: Nombre y Correo -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
       <div>
+        <!-- Campo: Nombre completo -->
         <label for="nombre" class="block text-sm font-medium text-gray-700">Nombre Completo</label>
         <input type="text" id="nombre" name="nombreCompleto" [(ngModel)]="asesoria.nombreCompleto" required
                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
       </div>
       <div>
+        <!-- Campo: Correo -->
         <label for="correo" class="block text-sm font-medium text-gray-700">Correo Electrónico</label>
         <input type="email" id="correo" name="correo" [(ngModel)]="asesoria.correo" required email
                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
       </div>
     </div>
 
+    <!-- Fila: Carrera y Edad -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
       <div>
+        <!-- Campo: Carrera de interés -->
         <label for="carrera" class="block text-sm font-medium text-gray-700">Carrera de Interés</label>
         <input type="text" id="carrera" name="carreraInteres" [(ngModel)]="asesoria.carreraInteres" required
                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
       </div>
       <div>
+        <!-- Campo: Edad -->
         <label for="edad" class="block text-sm font-medium text-gray-700">Edad</label>
         <input type="number" id="edad" name="edad" [(ngModel)]="asesoria.edad"
                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
       </div>
     </div>
 
+    <!-- Campo: Colegio de procedencia -->
     <div>
       <label for="colegio" class="block text-sm font-medium text-gray-700">Colegio de Procedencia</label>
       <input type="text" id="colegio" name="colegio" [(ngModel)]="asesoria.colegio"
              class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
     </div>
 
+    <!-- Campo: Comentarios adicionales -->
     <div>
       <label for="comentarios" class="block text-sm font-medium text-gray-700">Comentarios Adicionales</label>
       <textarea id="comentarios" name="comentarios" [(ngModel)]="asesoria.comentarios" rows="4"
                 class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"></textarea>
     </div>
 
+    <!-- Mensaje de éxito -->
     <div *ngIf="mensajeExito" class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-md">
       {{ mensajeExito }}
     </div>
+    <!-- Mensaje de error -->
     <div *ngIf="mensajeError" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-md">
       {{ mensajeError }}
     </div>

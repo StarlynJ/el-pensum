@@ -1,0 +1,72 @@
+/* Estilos base para los enlaces del navbar */
+.nav-link {
+  padding: 0.5rem 1rem; /* 8px 16px */
+  border-radius: 0.5rem; /* 8px */
+  font-weight: 500;
+  transition: all 0.2s ease-in-out;
+  border: 2px solid transparent; /* Borde transparente para mantener el tamaño */
+}
+
+/* Estilos para el enlace cuando NO está activo y se pasa el cursor por encima */
+.nav-link:hover {
+  background-color: #f3f4f6; /* gray-100 */
+}
+.dark .nav-link:hover {
+  background-color: #374151; /* gray-700 */
+}
+
+/* ✅ NUEVO: Estilo para el enlace CUANDO ESTÁ ACTIVO */
+.active-link-boxed {
+  font-weight: 600; /* Un poco más de grosor */
+  color: #2563eb; /* blue-600 */
+  border-color: #3b82f6; /* Borde azul */
+  background-color: #eff6ff; /* blue-50 */
+}
+.dark .active-link-boxed {
+  color: #60a5fa; /* blue-400 */
+  border-color: #3b82f6; /* Borde azul */
+  background-color: #1e3a8a; /* blue-900 con un toque extra */
+}
+
+
+/* --- Estilos para el Menú Móvil --- */
+.mobile-nav-link {
+  display: block;
+  padding: 0.75rem 1rem;
+  border-radius: 0.375rem; /* 6px */
+  font-weight: 500;
+  border-left: 4px solid transparent;
+}
+.mobile-nav-link:hover {
+  background-color: #f3f4f6; /* gray-100 */
+}
+.dark .mobile-nav-link:hover {
+  background-color: #374151; /* gray-700 */
+}
+
+/* ✅ NUEVO: Estilo para el enlace activo en el menú móvil */
+.mobile-nav-link.active-link-boxed {
+  font-weight: 600;
+  color: #2563eb; /* blue-600 */
+  background-color: #eff6ff; /* blue-50 */
+  border-left-color: #2563eb; /* Borde lateral azul */
+}
+.dark .mobile-nav-link.active-link-boxed {
+  color: #60a5fa; /* blue-400 */
+  background-color: #1e3a8a; /* blue-900 con un toque extra */
+  border-left-color: #60a5fa; /* Borde lateral azul claro */
+}
+
+
+/* --- Estilos para botones de íconos --- */
+.icon-btn {
+  padding: 0.5rem;
+  border-radius: 9999px; /* fully rounded */
+  transition: all 0.2s ease-in-out;
+}
+.icon-btn:hover {
+  background-color: #f3f4f6; /* gray-100 */
+}
+.dark .icon-btn:hover {
+  background-color: #374151; /* gray-700 */
+}

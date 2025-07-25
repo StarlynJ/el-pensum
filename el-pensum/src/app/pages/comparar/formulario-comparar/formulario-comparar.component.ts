@@ -9,6 +9,13 @@ import { Carrera } from '../../../core/models/carrera.model';
 import { CarreraService } from '../../../core/services/carrera.service';
 import { CarreraUniversitariaService } from '../../../core/services/carrera-universitaria.service';
 
+interface UniversitySlot {
+  searchText: string;
+  suggestions: Universidad[];
+  showSuggestions: boolean;
+  selectedUniversity: Universidad | null;
+}
+
 @Component({
   selector: 'app-formulario-comparar',
   templateUrl: './formulario-comparar.component.html',
@@ -17,24 +24,15 @@ import { CarreraUniversitariaService } from '../../../core/services/carrera-univ
   imports: [CommonModule, FormsModule]
 })
 export class FormularioCompararComponent implements OnInit {
-  // --- Listas de datos ---
   carreras: Carrera[] = [];
   universidadesDisponibles: Universidad[] = [];
-  universidadesSeleccionadas: Universidad[] = [];
 
-  // --- Modelos para la selección ---
   carreraSeleccionada: Carrera | null = null;
-  universidadParaAgregar: Universidad | null = null;
-
-  // --- Propiedades para el autocompletado ---
   carreraSearchText: string = '';
-  universidadSearchText: string = '';
-  
   carrerasSugeridas: Carrera[] = [];
-  universidadesSugeridas: Universidad[] = [];
-  
   showSugerenciasCarrera: boolean = false;
-  showSugerenciasUniversidad: boolean = false;
+
+  universitySlots: UniversitySlot[] = [];
 
   constructor(
     private carreraService: CarreraService,
@@ -48,7 +46,6 @@ export class FormularioCompararComponent implements OnInit {
     });
   }
 
-  // --- Lógica de autocompletado de Carrera ---
   onCarreraInput(): void {
     if (this.carreraSearchText) {
       this.carrerasSugeridas = this.carreras.filter(c =>
@@ -58,9 +55,8 @@ export class FormularioCompararComponent implements OnInit {
     } else {
       this.showSugerenciasCarrera = false;
       this.carrerasSugeridas = [];
-    }
-    if (this.carreraSeleccionada?.nombre !== this.carreraSearchText) {
-        this.carreraSeleccionada = null;
+      this.carreraSeleccionada = null;
+      this.universitySlots = [];
     }
   }
 
@@ -71,68 +67,87 @@ export class FormularioCompararComponent implements OnInit {
     this.onCarreraSeleccionada();
   }
 
-  // --- Lógica de autocompletado de Universidad ---
-  onUniversidadInput(): void {
-    if (this.universidadSearchText) {
-      const idsSeleccionados = this.universidadesSeleccionadas.map(u => u.id);
-      this.universidadesSugeridas = this.universidadesDisponibles.filter(u =>
-        u.nombre && u.nombre.toLowerCase().includes(this.universidadSearchText.toLowerCase()) &&
-        !idsSeleccionados.includes(u.id)
-      );
-      this.showSugerenciasUniversidad = this.universidadesSugeridas.length > 0;
-    } else {
-      this.showSugerenciasUniversidad = false;
-      this.universidadesSugeridas = [];
-    }
-     if (this.universidadParaAgregar?.nombre !== this.universidadSearchText) {
-        this.universidadParaAgregar = null;
-    }
-  }
-
-  seleccionarUniversidad(universidad: Universidad): void {
-    this.universidadParaAgregar = universidad;
-    this.universidadSearchText = universidad.nombre;
-    this.showSugerenciasUniversidad = false;
-  }
-  
   onCarreraSeleccionada(): void {
     if (!this.carreraSeleccionada?.id) return;
     
-    this.universidadesSeleccionadas = [];
-    this.universidadParaAgregar = null;
-    this.universidadSearchText = '';
+    this.universitySlots = [this.crearSlotVacio(), this.crearSlotVacio()];
 
     this.carreraUniversitariaService.getUniversidadesPorCarrera(this.carreraSeleccionada.id)
       .subscribe(universidades => {
         this.universidadesDisponibles = universidades;
       });
   }
+  
+  onUniversidadInput(index: number): void {
+    const slot = this.universitySlots[index];
+    if (slot.searchText) {
+      const idsSeleccionados = this.universitySlots
+        .map(s => s.selectedUniversity?.id)
+        .filter(id => id != null);
 
-  agregarUniversidad(): void {
-    if (!this.universidadParaAgregar) return;
-    this.universidadesSeleccionadas.push(this.universidadParaAgregar);
-    this.universidadParaAgregar = null;
-    this.universidadSearchText = '';
-    this.universidadesSugeridas = [];
+      // ✅ ================== CORRECCIÓN AQUÍ ==================
+      // Añadimos 'u.id != null' para asegurar que el ID no sea undefined
+      slot.suggestions = this.universidadesDisponibles.filter(u =>
+        u.id != null && // <-- Se añade esta comprobación
+        u.nombre && u.nombre.toLowerCase().includes(slot.searchText.toLowerCase()) &&
+        !idsSeleccionados.includes(u.id)
+      );
+      slot.showSuggestions = slot.suggestions.length > 0;
+    } else {
+      slot.showSuggestions = false;
+      slot.suggestions = [];
+    }
   }
 
-  quitarUniversidad(idUniversidad: number): void {
-    this.universidadesSeleccionadas = this.universidadesSeleccionadas.filter(u => u.id !== idUniversidad);
+  seleccionarUniversidad(universidad: Universidad, index: number): void {
+    this.universitySlots[index].selectedUniversity = universidad;
+    this.universitySlots[index].searchText = universidad.nombre;
+    this.universitySlots[index].showSuggestions = false;
+  }
+  
+  addUniversitySlot(): void {
+    if (this.universitySlots.length < 4) {
+      this.universitySlots.push(this.crearSlotVacio());
+    }
   }
 
-  // ✅ ================== MÉTODO ACTUALIZADO ==================
+  private crearSlotVacio(): UniversitySlot {
+    return {
+      searchText: '',
+      suggestions: [],
+      showSuggestions: false,
+      selectedUniversity: null
+    };
+  }
+
+  get universidadesSeleccionadasCount(): number {
+    return this.universitySlots.filter(s => s.selectedUniversity != null).length;
+  }
+
+  quitarUniversidad(universidadId: number): void {
+    const slotIndex = this.universitySlots.findIndex(s => s.selectedUniversity?.id === universidadId);
+    if (slotIndex > -1) {
+      if (this.universitySlots.length > 2) {
+        this.universitySlots.splice(slotIndex, 1);
+      } else {
+        this.universitySlots[slotIndex] = this.crearSlotVacio();
+      }
+    }
+  }
+
   comparar(): void {
-    if (this.universidadesSeleccionadas.length < 2 || !this.carreraSeleccionada?.id) {
-      alert('Debes seleccionar una carrera y entre 2 y 4 universidades para comparar.');
+    if (this.universidadesSeleccionadasCount < 2 || !this.carreraSeleccionada?.id) {
+      alert('Debes seleccionar una carrera y al menos 2 universidades para comparar.');
       return;
     }
 
-    const ids = this.universidadesSeleccionadas.map(u => u.id).join(',');
-    
-    // Obtenemos el ID de la carrera en lugar del nombre
+    const ids = this.universitySlots
+      .map(s => s.selectedUniversity?.id)
+      .filter(id => id != null)
+      .join(',');
+      
     const carreraId = this.carreraSeleccionada.id;
 
-    // Navegamos usando el ID de la carrera, que es seguro para la URL
     this.router.navigate([`/comparar`, ids, carreraId]);
   }
 }

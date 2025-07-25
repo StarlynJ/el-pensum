@@ -13,55 +13,73 @@
       Comparando: <span class="text-blue-600">{{ carreraNombre }}</span>
     </h1>
 
-    <div class="overflow-x-auto">
-      <div class="grid gap-1 md:gap-4" [style.grid-template-columns]="'1fr '.repeat(universidades.length + 1)">
-
-        <div class="font-bold p-3"></div>
-        <div *ngFor="let uni of universidades" class="text-center font-bold p-3 bg-gray-50 rounded-lg">
-          <img [src]="uni?.logoUrl" [alt]="uni?.nombre" class="h-16 mx-auto mb-2 object-contain">
-          <h2 class="text-md md:text-lg">{{ uni?.nombre }}</h2>
-        </div>
-
-        <ng-container *ngFor="let grupo of gruposDeCampos">
-          <h3 class="text-lg font-semibold bg-gray-100 p-3 rounded-t-lg -mb-px" [style.grid-column]="'span ' + (universidades.length + 1)">
-            {{ grupo.nombre }}
-          </h3>
-          
-          <ng-container *ngFor="let campo of grupo.campos; let isOdd = odd">
-            <div class="p-3 font-medium text-gray-700 border-b flex items-center" [ngClass]="{ 'bg-white': isOdd, 'bg-gray-50': !isOdd }">{{ campo.label }}</div>
-            
-            <div *ngFor="let cu of comparacion" class="p-3 text-center border-b" [ngClass]="{ 'bg-white': isOdd, 'bg-gray-50': !isOdd }">
-              <ng-container [ngSwitch]="campo.tipo">
-                
-                <ng-container *ngSwitchCase="'enlace'">
-                  <button (click)="openPdfModal(obtenerValor(cu, campo.key))" class="text-blue-500 hover:underline px-3 py-1 rounded bg-blue-50 hover:bg-blue-100">
-                    Ver Pensum
-                  </button>
+    <div class="hidden md:block overflow-x-auto bg-white shadow-md rounded-lg">
+      <table class="min-w-full">
+        <thead class="bg-gray-100">
+          <tr>
+            <th class="py-4 px-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider w-1/4">
+              Característica
+            </th>
+            <th *ngFor="let uni of universidades" class="py-4 px-4 text-center text-sm font-semibold text-gray-700 uppercase tracking-wider">
+              <div class="flex flex-col items-center">
+                <img [src]="uni.logoUrl" [alt]="uni.nombre" class="h-16 mb-2 object-contain">
+                <span>{{ uni.nombre }}</span>
+              </div>
+            </th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-200">
+          <ng-container *ngFor="let grupo of gruposDeCampos">
+            <tr class="bg-gray-50">
+              <td [attr.colspan]="universidades.length + 1" class="py-2 px-4 text-xs font-bold text-gray-500 uppercase">
+                {{ grupo.nombre }}
+              </td>
+            </tr>
+            <tr *ngFor="let campo of grupo.campos">
+              <td class="py-4 px-4 font-medium text-gray-800 text-sm align-middle">{{ campo.label }}</td>
+              <td *ngFor="let cu of comparacion" class="py-4 px-4 text-center text-gray-700 align-middle">
+                <ng-container [ngSwitch]="campo.tipo">
+                  <ng-container *ngSwitchCase="'enlace'"><button (click)="openPdfModal(obtenerValor(cu, campo.key))" class="text-blue-500 hover:underline px-3 py-1 rounded bg-blue-50 hover:bg-blue-100 text-sm">Ver Pensum</button></ng-container>
+                  <span *ngSwitchCase="'moneda'">{{ obtenerValor(cu, campo.key) | currency:'USD':'symbol':'1.2-2' }}</span>
+                  <div *ngSwitchCase="'imagenes'" class="flex gap-2 overflow-x-auto p-1 justify-center"><ng-container *ngIf="obtenerValor(cu, campo.key) as imagenes"><img *ngFor="let img of imagenes; let j = index" [src]="img" class="h-16 w-24 object-cover rounded-md shadow-sm cursor-pointer hover:opacity-80 transition-opacity" (click)="openModal(imagenes, j)"></ng-container></div>
+                  <span *ngSwitchDefault>{{ obtenerValor(cu, campo.key) }}</span>
                 </ng-container>
-                
-                <span *ngSwitchCase="'moneda'">
-                  {{ obtenerValor(cu, campo.key) | currency:'USD':'symbol':'1.2-2' }}
-                </span>
-
-                <div *ngSwitchCase="'imagenes'" class="flex gap-2 overflow-x-auto p-1">
-                    <ng-container *ngIf="obtenerValor(cu, campo.key) as imagenes">
-                        <img *ngFor="let img of imagenes; let i = index" 
-                             [src]="img" 
-                             class="h-20 w-28 object-cover rounded-md shadow-sm cursor-pointer hover:opacity-80 transition-opacity"
-                             (click)="openModal(imagenes, i)">
-                    </ng-container>
-                </div>
-
-                <span *ngSwitchDefault>
-                  {{ obtenerValor(cu, campo.key) }}
-                </span>
-              </ng-container>
-            </div>
+              </td>
+            </tr>
           </ng-container>
-        </ng-container>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="block md:hidden">
+      <div class="grid gap-4" [style.grid-template-columns]="'repeat(' + universidades.length + ', 1fr)'">
+        
+        <div *ngFor="let cu of comparacion; let i = index" class="flex flex-col space-y-4">
+          <div class="p-3 bg-gray-50 rounded-lg text-center font-bold">
+            <img [src]="universidades[i].logoUrl" [alt]="universidades[i].nombre" class="h-12 mx-auto mb-2 object-contain">
+            <h2 class="text-sm">{{ universidades[i].nombre }}</h2>
+          </div>
+
+          <div class="space-y-2">
+            <ng-container *ngFor="let grupo of gruposDeCampos">
+              <div *ngFor="let campo of grupo.campos" class="bg-white p-3 rounded-lg shadow-sm">
+                <div class="text-xs text-gray-500 mb-1">{{ campo.label }}</div>
+                <div class="font-semibold text-gray-900 text-sm text-center">
+                  <ng-container [ngSwitch]="campo.tipo">
+                    <ng-container *ngSwitchCase="'enlace'"><button (click)="openPdfModal(obtenerValor(cu, campo.key))" class="text-blue-500 hover:underline text-sm">Ver Pensum</button></ng-container>
+                    <span *ngSwitchCase="'moneda'">{{ obtenerValor(cu, campo.key) | currency:'USD':'symbol':'1.2-2' }}</span>
+                    <div *ngSwitchCase="'imagenes'" class="flex gap-2 overflow-x-auto p-1 justify-center"><ng-container *ngIf="obtenerValor(cu, campo.key) as imagenes"><img *ngFor="let img of imagenes; let j = index" [src]="img" class="h-12 w-20 object-cover rounded-md shadow-sm cursor-pointer" (click)="openModal(imagenes, j)"></ng-container></div>
+                    <span *ngSwitchDefault>{{ obtenerValor(cu, campo.key) }}</span>
+                  </ng-container>
+                </div>
+              </div>
+            </ng-container>
+          </div>
+        </div>
 
       </div>
     </div>
+
   </div>
 </div>
 

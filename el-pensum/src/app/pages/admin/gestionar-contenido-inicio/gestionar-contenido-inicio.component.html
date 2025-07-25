@@ -1,0 +1,51 @@
+<div class="container mx-auto p-4 md:p-6 bg-white rounded-lg shadow-md">
+  <h1 class="text-2xl font-bold text-gray-800 mb-6 border-b pb-4">Gestionar Contenido de la Página de Inicio</h1>
+
+  <div *ngIf="isLoading" class="text-center py-8">
+    <p class="text-gray-500">Cargando contenido...</p>
+  </div>
+
+  <form *ngIf="!isLoading" [formGroup]="contenidoForm" (ngSubmit)="onSubmit()">
+
+    <div class="mb-4">
+      <label for="tituloVideo" class="form-label">Título de la Sección de Video</label>
+      <input id="tituloVideo" type="text" formControlName="tituloVideo" class="form-input">
+      </div>
+
+    <div class="mb-4">
+      <label for="textoVideo" class="form-label">Texto Descriptivo del Video</label>
+      <textarea id="textoVideo" formControlName="textoVideo" rows="4" class="form-textarea"></textarea>
+      </div>
+
+    <div class="mb-4">
+      <label for="urlVideoLoop" class="form-label">URL del Video en Bucle (.mp4)</label>
+      <input id="urlVideoLoop" type="url" formControlName="urlVideoLoop" class="form-input">
+      <p class="form-hint">Ej: https://servidor.com/video.mp4</p>
+    </div>
+
+    <div class="mb-4">
+      <label for="urlVideoYoutube" class="form-label">URL del Video en YouTube</label>
+      <input id="urlVideoYoutube" type="url" formControlName="urlVideoYoutube" class="form-input">
+      <p class="form-hint">El enlace al que se redirige al hacer clic en "Ver Video".</p>
+    </div>
+
+    <div class="mb-6">
+      <label for="urlCanalYoutube" class="form-label">URL del Canal de YouTube</label>
+      <input id="urlCanalYoutube" type="url" formControlName="urlCanalYoutube" class="form-input">
+      <p class="form-hint">El enlace para el botón "Suscríbete".</p>
+    </div>
+
+    <div *ngIf="successMessage" class="mb-4 p-3 rounded-md bg-green-100 text-green-800">
+      {{ successMessage }}
+    </div>
+    <div *ngIf="errorMessage" class="mb-4 p-3 rounded-md bg-red-100 text-red-800">
+      {{ errorMessage }}
+    </div>
+
+    <div class="flex justify-end">
+      <button type="submit" [disabled]="contenidoForm.invalid" class="btn btn-primary disabled:opacity-50 disabled:cursor-not-allowed">
+        Guardar Cambios
+      </button>
+    </div>
+  </form>
+</div>

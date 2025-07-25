@@ -8,6 +8,7 @@ import { Universidad } from '../../../core/models/universidad.model';
 import { Carrera } from '../../../core/models/carrera.model';
 import { CarreraUniversitaria } from '../../../core/models/carrera-universitaria.model';
 
+// Componente para asignar carreras a universidades
 @Component({
   selector: 'app-gestionar-asignaciones',
   standalone: true,
@@ -16,10 +17,11 @@ import { CarreraUniversitaria } from '../../../core/models/carrera-universitaria
   styleUrls: ['./gestionar-asignaciones.component.css']
 })
 export class GestionarAsignacionesComponent implements OnInit {
+  // Listado de universidades y carreras para los selects
   universidades: Universidad[] = [];
   carreras: Carrera[] = [];
 
-  // ✅ CAMBIO: Objeto actualizado al nuevo modelo
+  // Objeto con los datos de la asignación
   asignacion: CarreraUniversitaria = {
     universidadId: 0,
     carreraId: 0,
@@ -29,12 +31,14 @@ export class GestionarAsignacionesComponent implements OnInit {
     costosAdicionales: '' // Campo nuevo
   };
 
+  // Inyectamos los servicios necesarios
   constructor(
     private universidadService: UniversidadService,
     private carreraService: CarreraService,
     private carreraUniversitariaService: CarreraUniversitariaService
   ) {}
 
+  // Al iniciar, cargamos universidades y carreras
   ngOnInit(): void {
     this.universidadService.getUniversidades().subscribe({
       next: data => this.universidades = data
@@ -45,6 +49,7 @@ export class GestionarAsignacionesComponent implements OnInit {
     });
   }
 
+  // Guarda la asignación de carrera a universidad
   guardar(): void {
     if (this.asignacion.universidadId === 0 || this.asignacion.carreraId === 0) {
       alert('Debe seleccionar universidad y carrera.');
@@ -63,6 +68,7 @@ export class GestionarAsignacionesComponent implements OnInit {
     });
   }
 
+  // Limpia el formulario para una nueva asignación
   reiniciarFormulario(): void {
     // ✅ CAMBIO: Objeto actualizado al nuevo modelo
     this.asignacion = {

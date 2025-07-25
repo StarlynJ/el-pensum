@@ -1,3 +1,48 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer components {
+  /* ===== Botones Generales ===== */
+  .btn {
+    @apply inline-block font-bold rounded-lg text-center transition duration-300 ease-in-out transform hover:-translate-y-0.5 shadow-md hover:shadow-lg whitespace-nowrap text-sm py-2 px-4 sm:text-lg sm:py-3 sm:px-6;
+  }
+
+  .btn-primary {
+    @apply bg-blue-600 hover:bg-blue-700 text-white;
+  }
+
+  .btn-red {
+    @apply bg-red-600 hover:bg-red-700 text-white;
+  }
+
+  .btn-secondary {
+    @apply bg-gray-200 hover:bg-gray-300 text-gray-800;
+  }
+
+  /* ===== Navegación ===== */
+  .nav-link {
+    @apply text-gray-600 px-3 py-2 rounded-md text-base font-medium transition-colors duration-200;
+  }
+
+  .nav-link.active-link {
+    @apply text-blue-600 font-semibold;
+  }
+
+  .icon-btn {
+    @apply p-2 rounded-full transition-colors duration-200 outline-none;
+  }
+
+  /* ===== Menú Móvil ===== */
+  .mobile-nav-link {
+    @apply text-gray-700 block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200;
+  }
+
+  .mobile-nav-link.active-link {
+    @apply bg-blue-50 text-blue-600 font-semibold;
+  }
+
+  .mobile-menu-container {
+    @apply bg-white/95 backdrop-blur-md;
+  }
+}

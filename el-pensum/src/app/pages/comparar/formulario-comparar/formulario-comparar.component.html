@@ -1,4 +1,4 @@
-<div class="formulario-comparar p-4 md:p-6 bg-gray-50 rounded-lg shadow">
+<div class="formulario-comparar">
   <h2 class="text-xl font-semibold mb-4 text-center">Comparar universidades por carrera</h2>
 
   <div class="campo-container mb-4 relative">
@@ -11,67 +11,72 @@
       (focus)="onCarreraInput()"
       placeholder="-- Escribe para buscar una carrera --"
       autocomplete="off"
-      class="w-full border p-2 rounded-md"
+      class="input-glow"
     />
     <div *ngIf="showSugerenciasCarrera && carrerasSugeridas.length > 0" class="sugerencias">
-      <div
-        *ngFor="let c of carrerasSugeridas"
-        (mousedown)="seleccionarCarrera(c)"
-        class="sugerencia-item"
-      >
+      <div *ngFor="let c of carrerasSugeridas" (mousedown)="seleccionarCarrera(c)" class="sugerencia-item">
         <img *ngIf="c.iconoUrl" [src]="c.iconoUrl" alt="Icono" class="sugerencia-icono">
         <div *ngIf="!c.iconoUrl" class="sugerencia-icono-placeholder"></div>
         <span>{{ c.nombre }}</span>
       </div>
-      </div>
+    </div>
   </div>
 
-  <div class="mb-4" *ngIf="carreraSeleccionada">
-    <label class="block font-medium mb-1">Paso 2: Añade de 2 a 4 universidades</label>
-    <div class="flex gap-2">
-      <div class="flex-grow campo-container relative">
-        <input
-          type="text"
-          [(ngModel)]="universidadSearchText"
-          (ngModelChange)="onUniversidadInput()"
-          (blur)="showSugerenciasUniversidad = false"
-          (focus)="onUniversidadInput()"
-          placeholder="-- Escribe para buscar una universidad --"
-          autocomplete="off"
-          class="w-full border p-2 rounded-md"
-          [disabled]="!carreraSeleccionada"
-        />
-        <div *ngIf="showSugerenciasUniversidad && universidadesSugeridas.length > 0" class="sugerencias">
-          <div
-            *ngFor="let u of universidadesSugeridas"
-            (mousedown)="seleccionarUniversidad(u)"
-            class="sugerencia-item"
-          >
-            <img *ngIf="u.logoUrl" [src]="u.logoUrl" alt="Logo" class="sugerencia-logo">
-            <div *ngIf="!u.logoUrl" class="sugerencia-logo-placeholder"></div>
-            <span>{{ u.nombre }}</span>
-          </div>
-          </div>
+  <div class="mb-4 space-y-4" *ngIf="carreraSeleccionada">
+    <label class="block font-medium mb-1">Paso 2: Elige de 2 a 4 universidades</label>
+
+    <div *ngFor="let slot of universitySlots; let i = index" class="flex-grow campo-container relative">
+      <input
+        type="text"
+        [(ngModel)]="slot.searchText"
+        (input)="onUniversidadInput(i)"
+        (blur)="slot.showSuggestions = false"
+        (focus)="onUniversidadInput(i)"
+        [placeholder]="'Universidad ' + (i + 1)"
+        autocomplete="off"
+        class="input-glow"
+      />
+      <div *ngIf="slot.showSuggestions && slot.suggestions.length > 0" class="sugerencias">
+        <div *ngFor="let u of slot.suggestions" (mousedown)="seleccionarUniversidad(u, i)" class="sugerencia-item">
+          <img *ngIf="u.logoUrl" [src]="u.logoUrl" alt="Logo" class="sugerencia-logo">
+          <div *ngIf="!u.logoUrl" class="sugerencia-logo-placeholder"></div>
+          <span>{{ u.nombre }}</span>
+        </div>
       </div>
-      <button (click)="agregarUniversidad()" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600" [disabled]="!universidadParaAgregar || universidadesSeleccionadas.length >= 4">
-        Añadir
+    </div>
+
+    <div class="flex justify-center">
+      <button 
+        (click)="addUniversitySlot()" 
+        *ngIf="universitySlots.length < 4" 
+        class="bg-blue-100 text-blue-700 hover:bg-blue-200 rounded-full w-10 h-10 flex items-center justify-center transition"
+        title="Añadir otra universidad">
+        <span class="text-2xl font-bold">+</span>
       </button>
     </div>
   </div>
 
-  <div *ngIf="universidadesSeleccionadas.length > 0" class="mb-6">
+  <div *ngIf="universidadesSeleccionadasCount > 0" class="mb-6">
     <h3 class="font-semibold mb-2">Universidades a comparar:</h3>
     <ul class="space-y-2">
-      <li *ngFor="let uni of universidadesSeleccionadas" class="flex justify-between items-center bg-white p-3 rounded-md shadow-sm">
-        <span class="text-gray-800">{{ uni.nombre }}</span>
-        <button (click)="quitarUniversidad(uni.id!)" class="text-red-500 hover:text-red-700 font-semibold text-sm">
-          Quitar
-        </button>
-      </li>
-    </ul>
+      <ng-container *ngFor="let slot of universitySlots">
+        <li *ngIf="slot.selectedUniversity"
+            class="flex justify-between items-center bg-white p-3 rounded-md shadow-sm">
+          <span class="text-gray-800">{{ slot.selectedUniversity.nombre }}</span>
+          <button (click)="quitarUniversidad(slot.selectedUniversity.id!)" class="text-red-500 hover:text-red-700 font-semibold text-sm">
+            Quitar
+          </button>
+        </li>
+      </ng-container>
+      </ul>
   </div>
 
-  <button (click)="comparar()" class="w-full bg-indigo-600 text-white px-4 py-3 rounded-md hover:bg-indigo-700 font-bold text-lg" [disabled]="universidadesSeleccionadas.length < 2">
-    Comparar ({{ universidadesSeleccionadas.length }})
+  <button 
+    *ngIf="carreraSeleccionada"
+    (click)="comparar()" 
+    class="w-full text-white px-4 py-3 rounded-md font-bold text-lg transition"
+    [ngClass]="universidadesSeleccionadasCount >= 2 ? 'bg-indigo-600 hover:bg-indigo-700' : 'bg-indigo-300 cursor-not-allowed'"
+    [disabled]="universidadesSeleccionadasCount < 2">
+    Comparar ({{ universidadesSeleccionadasCount }})
   </button>
 </div>

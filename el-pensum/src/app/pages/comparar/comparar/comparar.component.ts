@@ -1,20 +1,19 @@
 // ✅ 1. Importamos HostListener, DomSanitizer, SafeResourceUrl Y HttpErrorResponse
-import { Component, OnInit, HostListener } from '@angular/core';
+// Se elimina HostBinding de los imports
+import { Component, OnInit, HostListener } from '@angular/core'; 
+// ... (resto de imports sin cambios)
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule, CurrencyPipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { forkJoin, of, throwError, Observable } from 'rxjs';
 import { switchMap, catchError } from 'rxjs/operators';
-
-// Services
 import { CarreraUniversitariaService } from '../../../core/services/carrera-universitaria.service';
 import { UniversidadService } from '../../../core/services/universidad.service';
 import { CarreraService } from '../../../core/services/carrera.service';
-
-// Models
 import { Universidad } from '../../../core/models/universidad.model';
 import { CarreraUniversitaria } from '../../../core/models/carrera-universitaria.model';
+
 
 @Component({
   selector: 'app-comparar',
@@ -24,23 +23,27 @@ import { CarreraUniversitaria } from '../../../core/models/carrera-universitaria
   imports: [CommonModule, CurrencyPipe]
 })
 export class CompararComponent implements OnInit {
+  // ... (propiedades sin cambios)
   carreraNombre = 'Comparación';
   universidades: Universidad[] = [];
   comparacion: (CarreraUniversitaria | Universidad)[] = [];
   isLoading = true;
   error = '';
   gruposDeCampos: any[] = [];
-
-  // Propiedades para la galería de imágenes
   isModalVisible = false;
   modalImages: string[] = [];
   currentImageIndex = 0;
-
-  // Propiedades para el visor de PDF
   isPdfModalVisible = false;
   safePdfUrl: SafeResourceUrl | null = null;
 
 
+  // ✅ 2. Se elimina la propiedad HostBinding
+  // @HostBinding('style.--comparison-cols')
+  // get comparisonCols() {
+  //   return this.universidades.length;
+  // }
+  
+  // ... (resto del archivo .ts sin cambios)
   @HostListener('window:keydown', ['$event'])
   handleKeyboardEvent(event: KeyboardEvent) {
     if (this.isModalVisible) {
@@ -71,7 +74,6 @@ export class CompararComponent implements OnInit {
     }
   }
 
-  // --- Métodos de Modales (sin cambios) ---
   openModal(images: string[], index: number): void {
     if (images && images.length > 0) {
       this.modalImages = images;
@@ -107,8 +109,6 @@ export class CompararComponent implements OnInit {
     this.safePdfUrl = null;
     document.body.classList.remove('modal-open');
   }
-  
-  // --- Lógica de Carga de Datos ---
   
   private handleAdvancedComparison(state: any): void {
     if (state.mode === 'Universidades') {
@@ -188,13 +188,10 @@ export class CompararComponent implements OnInit {
       }),
       catchError(err => this.handleError(err, 'Ocurrió un error al cargar los datos de la comparación.'))
     ).subscribe(data => {
-      // ✅ ================== CORRECCIÓN AQUÍ ==================
-      // Verificamos que 'data' no sea nulo antes de usarlo.
       if (data) {
         this.comparacion = data.sort((a, b) => ids.indexOf(a.universidadId) - ids.indexOf(b.universidadId));
         this.universidades = this.comparacion.map(c => (c as CarreraUniversitaria).universidad).filter((u): u is Universidad => !!u);
       }
-      // Siempre detenemos la carga, incluso si 'data' es nulo (caso de error manejado)
       this.isLoading = false;
     });
   }
@@ -223,7 +220,6 @@ export class CompararComponent implements OnInit {
     return of(null);
   }
 
-  // --- Métodos de configuración de campos (sin cambios) ---
   private setupCareerComparisonFields(): void {
     this.gruposDeCampos = [
       {

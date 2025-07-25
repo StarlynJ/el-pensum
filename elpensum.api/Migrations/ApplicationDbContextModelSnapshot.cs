@@ -138,6 +138,52 @@ namespace elpensum.api.Migrations
                     b.ToTable("CarrerasUniversitarias");
                 });
 
+            modelBuilder.Entity("ElPensum.API.Models.ContenidoInicio", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("TextoVideo")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("TituloVideo")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("UrlCanalYoutube")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UrlVideoLoop")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UrlVideoYoutube")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ContenidoInicio");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            TextoVideo = "Este es un texto de ejemplo que puedes editar desde el panel de administración.",
+                            TituloVideo = "Título de Ejemplo",
+                            UrlCanalYoutube = "https://www.youtube.com",
+                            UrlVideoLoop = "https://videos.pexels.com/video-files/5844238/5844238-sd_640_360_30fps.mp4",
+                            UrlVideoYoutube = "https://www.youtube.com"
+                        });
+                });
+
             modelBuilder.Entity("ElPensum.API.Models.Universidad", b =>
                 {
                     b.Property<int>("Id")

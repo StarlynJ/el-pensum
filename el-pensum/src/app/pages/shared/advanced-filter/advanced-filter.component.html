@@ -1,16 +1,8 @@
-<button (click)="toggleFilterVisibility()" class="fixed bottom-5 right-5 bg-blue-600 text-white p-4 rounded-full shadow-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 z-50">
-  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h18M3 8h18M3 12h18M3 16h18" />
-  </svg>
-</button>
-
-<div *ngIf="isFilterVisible" class="fixed inset-0 bg-black bg-opacity-50 z-40" (click)="toggleFilterVisibility()"></div>
-
-<div *ngIf="isFilterVisible" class="panel-container fixed top-0 right-0 h-full bg-white shadow-xl z-50 p-6 w-full max-w-md overflow-y-auto">
+<div class="panel-container h-full bg-white shadow-xl p-6 w-full max-w-md overflow-y-auto">
   
   <div class="flex justify-between items-center mb-6">
     <h2 class="text-2xl font-bold text-gray-800">Filtro Avanzado</h2>
-    <button (click)="toggleFilterVisibility()" class="text-gray-500 hover:text-gray-800">
+    <button (click)="closePanel()" class="text-gray-500 hover:text-gray-800">
       <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
       </svg>

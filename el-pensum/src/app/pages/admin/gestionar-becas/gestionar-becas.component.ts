@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Beca } from '../../../core/models/beca.model';
 import { BecaService } from '../../../core/services/beca.service';
 
+// Componente para gestionar (crear, editar, eliminar) becas
 @Component({
   selector: 'app-gestionar-becas',
   standalone: true,
@@ -12,18 +13,26 @@ import { BecaService } from '../../../core/services/beca.service';
   styleUrls: ['./gestionar-becas.component.css']
 })
 export class GestionarBecasComponent implements OnInit {
+  // Lista de becas existentes
   becas: Beca[] = [];
+  // Beca que se está editando o creando
   becaActual: Beca = this.resetBeca();
+  // true si estamos editando, false si es nueva
   modoEdicion = false;
+  // Estado de carga
   isLoading = true;
+  // Mensaje de error
   error = '';
 
+  // Inyectamos el servicio de becas
   constructor(private becaService: BecaService) {}
 
+  // Al iniciar, cargamos las becas
   ngOnInit(): void {
     this.cargarBecas();
   }
 
+  // Trae todas las becas del backend
   cargarBecas(): void {
     this.isLoading = true;
     this.becaService.getBecas().subscribe({
@@ -39,6 +48,7 @@ export class GestionarBecasComponent implements OnInit {
     });
   }
 
+  // Guarda una beca (crea o actualiza)
   guardar(): void {
     if (this.modoEdicion && this.becaActual.id) {
       // Actualizar beca existente
@@ -63,12 +73,14 @@ export class GestionarBecasComponent implements OnInit {
     }
   }
 
+  // Pone la beca seleccionada en modo edición
   editar(beca: Beca): void {
     this.becaActual = { ...beca }; // Copiamos la beca para no modificar la original directamente
     this.modoEdicion = true;
     window.scrollTo(0, 0); // Mover la vista al inicio para ver el formulario
   }
 
+  // Elimina una beca
   eliminar(id: number): void {
     if (confirm('¿Estás seguro de que deseas eliminar esta beca?')) {
       this.becaService.eliminarBeca(id).subscribe({
@@ -81,11 +93,13 @@ export class GestionarBecasComponent implements OnInit {
     }
   }
 
+  // Cancela la edición y limpia el formulario
   cancelar(): void {
     this.becaActual = this.resetBeca();
     this.modoEdicion = false;
   }
 
+  // Devuelve un objeto beca vacío
   private resetBeca(): Beca {
     return {
       titulo: '',

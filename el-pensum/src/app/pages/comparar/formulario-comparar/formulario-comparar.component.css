@@ -1,7 +1,4 @@
-/*
- * Contenedor principal de las sugerencias.
- * Lo posicionamos de forma absoluta para que flote sobre el contenido.
-*/
+/* --- Estilos del Autocompletado (Existentes) --- */
 .sugerencias {
   position: absolute;
   width: 100%;
@@ -10,43 +7,32 @@
   border-right: 1px solid #d1d5db;
   border-bottom: 1px solid #d1d5db;
   border-radius: 0 0 0.375rem 0.375rem; /* Bordes redondeados abajo */
-  max-height: 250px; /* Altura máxima antes de mostrar scroll */
-  overflow-y: auto;  /* Scroll vertical si hay muchos elementos */
-  z-index: 10;       /* Asegura que esté por encima de otros elementos */
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra suave */
+  max-height: 250px;
+  overflow-y: auto;
+  z-index: 10;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-/*
- * Cada una de las filas en la lista de sugerencias.
- * Usamos flexbox para alinear el logo/ícono con el texto.
-*/
 .sugerencia-item {
   display: flex;
-  align-items: center; /* Centra verticalmente el ícono con el texto */
-  padding: 0.75rem 1rem; /* Espaciado interno (12px y 16px) */
+  align-items: center;
+  padding: 0.75rem 1rem;
   cursor: pointer;
-  transition: background-color 0.2s ease-in-out; /* Transición suave al pasar el mouse */
+  transition: background-color 0.2s ease-in-out;
 }
 
-/* Efecto hover para cada fila */
 .sugerencia-item:hover {
   background-color: #f3f4f6; /* Un gris muy claro de Tailwind */
 }
 
-/*
- * Estilo para los logos de las universidades.
-*/
 .sugerencia-logo {
-  width: 32px;      /* Ancho del logo */
-  height: 32px;     /* Alto del logo */
-  margin-right: 12px; /* Espacio entre el logo y el nombre */
-  object-fit: contain; /* Asegura que el logo se vea completo sin deformarse */
-  flex-shrink: 0; /* Evita que la imagen se encoja */
+  width: 32px;
+  height: 32px;
+  margin-right: 12px;
+  object-fit: contain;
+  flex-shrink: 0;
 }
 
-/*
- * Estilo para los íconos de las carreras.
-*/
 .sugerencia-icono {
   width: 24px;
   height: 24px;
@@ -55,17 +41,40 @@
   flex-shrink: 0;
 }
 
-/*
- * Placeholder para cuando no hay logo o ícono.
- * Ocupa el mismo espacio para mantener todo alineado.
-*/
 .sugerencia-logo-placeholder,
 .sugerencia-icono-placeholder {
-  width: 32px; /* Debe coincidir con el ancho del logo/icono */
+  width: 32px;
   margin-right: 12px;
   flex-shrink: 0;
 }
 
 .sugerencia-icono-placeholder {
     width: 24px;
+}
+
+/* ======================================================= */
+/* Estilos para el Input con Resplandor Azul               */
+/* ======================================================= */
+
+.formulario-comparar {
+  background-color: transparent;
+  box-shadow: none;
+}
+
+.input-glow {
+  background-color: rgba(255, 255, 255, 0.8);
+  border: 1px solid #ffffff;
+  color: #111827;
+  /* ✅ CAMBIO: Valor de borde aumentado para un efecto circular */
+  border-radius: 9999px;
+  padding: 0.75rem 1.5rem; /* Ajuste de padding para la nueva forma */
+  width: 100%;
+  outline: none;
+  transition: all 0.3s ease-in-out;
+  box-shadow: 0 0 10px -3px rgba(59, 130, 246, 0.5);
+}
+
+.input-glow:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 15px -2px rgba(59, 130, 246, 0.8);
 }

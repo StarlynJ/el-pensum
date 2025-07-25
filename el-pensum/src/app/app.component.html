@@ -1,1 +1,7 @@
-<router-outlet></router-outlet>
+<app-navbar *ngIf="showLayout"></app-navbar>
+
+<main>
+  <router-outlet></router-outlet>
+</main>
+
+<app-footer *ngIf="showLayout"></app-footer>

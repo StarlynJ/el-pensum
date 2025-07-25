@@ -11,10 +11,10 @@
   (click)="cerrarSidebar()"
 ></div>
 
-<div class="flex h-screen overflow-hidden">
+<div class="flex h-screen bg-gray-100">
 
   <div
-    class="bg-gray-800 text-white w-64 h-full z-40 transition-transform duration-300 ease-in-out"
+    class="bg-gray-800 text-white w-64 h-full z-40 transition-transform duration-300 ease-in-out flex-shrink-0"
     [ngClass]="{
       'fixed inset-y-0 left-0 transform': esPantallaMovil,
       '-translate-x-full': !sidebarAbierto && esPantallaMovil,
@@ -26,10 +26,16 @@
       <a routerLink="/admin/carreras" routerLinkActive="font-bold" class="block py-2 px-4 hover:bg-gray-700 rounded">Carreras</a>
       <a routerLink="/admin/asignaciones" routerLinkActive="font-bold" class="block py-2 px-4 hover:bg-gray-700 rounded">Asignaciones</a>
       <a routerLink="/admin/becas" routerLinkActive="font-bold" class="block py-2 px-4 hover:bg-gray-700 rounded">Gestionar Becas</a>
+      
+      <a routerLink="/admin/contenido-inicio" 
+         routerLinkActive="font-bold" 
+         class="block py-2 px-4 hover:bg-gray-700 rounded border-t border-gray-700 mt-2 pt-4">
+         Gestionar Página de Inicio
+      </a>
     </div>
   </div>
 
-  <div class="flex-1 overflow-auto p-4" [ngClass]="{ 'ml-0': esPantallaMovil, 'md:ml-64': !esPantallaMovil && sidebarAbierto, 'md:ml-0': !sidebarAbierto && !esPantallaMovil }">
+  <main class="flex-1 overflow-y-auto p-4 sm:p-6 md:p-8" [ngClass]="{'ml-64': !esPantallaMovil}">
     <router-outlet></router-outlet>
-  </div>
+  </main>
 </div>
